@@ -1,19 +1,48 @@
 package net.pascalbrandt.dsm;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import net.pascalbrandt.dsm.web.fbo.SVMConfigurationForm;
 
 import weka.core.Attribute;
 
 public class AttributeFactory {
-	/*
-
-
-
-
-	*/
+	private static final Logger logger = LoggerFactory.getLogger(AttributeFactory.class);
 	
-	public AttributeFactory() {
+	public AttributeFactory() {	}
+	
+	public static List<Attribute> constructAttributeList(SVMConfigurationForm config) {
+		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 		
+		// Demographic Attributes
+		attributes.addAll(DemographicAttributeFactory.createAttributes(config.getSelectedDemographicAttributes()));
+		
+		// Clinical Attributes
+		attributes.addAll(ClinicalAttributeFactory.createAttributes(config.getSelectedClinicalAttributes()));
+		
+		// Adherence Attributes
+		attributes.addAll(AdherenceAttributeFactory.createAttributes(config.getSelectedAdherenceAttributes()));
+		
+		// Other Attributes
+		attributes.addAll(OtherAttributeFactory.createAttributes(config.getSelectedOtherAttributes()));		
+		
+		// Class Attribute
+		attributes.add(ClassAttributeFactory.CLASS_ATTRIBUTE_INDEX, ClassAttributeFactory.getClassAttibute());
+		
+		return attributes;
+	}
+	
+	public static void displayAttributeList(List<Attribute> attributes) {
+		logger.info("Attributes [" + attributes.size() + "]:");
+		
+		int i = 0;
+		for (Attribute a : attributes) {
+			logger.info("[" + i++ + "] " + a.name() + " (" + Attribute.typeToString(a) + ")");
+		}
 	}
 	
 	public static List<Attribute> getDemographicAttributes() {

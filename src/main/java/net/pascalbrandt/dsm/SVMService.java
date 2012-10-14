@@ -1,6 +1,7 @@
 package net.pascalbrandt.dsm;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.LibSVM;
+import weka.core.Attribute;
 import weka.core.Instances;
 import weka.core.SelectedTag;
 
@@ -62,14 +64,19 @@ public class SVMService implements ApplicationContextAware {
 		// Set the parameters
 		svm = setParameters(svm, config.getType(), config.getKernel(), config.getGamma(), config.getC());
 		
+		// Build attribute vector
+		List<Attribute> attributes = AttributeFactory.constructAttributeList(config);
+		
+		AttributeFactory.displayAttributeList(attributes);
+		
 		// Train
-		DataService ds = context.getBean(DataService.class);
+		//DataService ds = context.getBean(DataService.class);
 		//Instances trainingData = ds.getTrainingData();
-		Instances trainingData = ds.getPatientTrainingData(RegaService.AC_FAILURE_CLINIC_DATASET_DESCRIPTOR);
-		svm = train(svm, trainingData);		
+		//Instances trainingData = ds.getPatientTrainingData(RegaService.AC_FAILURE_CLINIC_DATASET_DESCRIPTOR);
+		//svm = train(svm, trainingData);		
 		
 		// Test
-		return testSVM(svm, trainingData);
+		return null;//testSVM(svm, trainingData);
 	}
 	
 	public Evaluation classify(Integer type, Integer kernel, Double gamma, Double C) {

@@ -3,15 +3,19 @@ package net.pascalbrandt.dsm;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import weka.core.Attribute;
 
 public class AdherenceAttributeFactory {
 	// Numeric Attributes
-	public static String[] ADHERENCE_NUMERIC_ATTRIBUTES = { "Treatment Break" };
-
+	public static final Set<String> ADHERENCE_NUMERIC_ATTRIBUTES = new HashSet<String>(Arrays.asList(
+		     new String[] {"Treatment Break"}
+	));	
+	
 	// Categortical Attributes
 	public static Map<String, String[]> ADHERENCE_CATEGORITCAL_ATTRIBUTES = new HashMap<String, String[]>();
 
@@ -71,6 +75,24 @@ public class AdherenceAttributeFactory {
 			attributes.add(name);
 		}
 
+		return attributes;
+	}
+	
+	public static List<Attribute> createAttributes(String[] selectedAdherenceAttributes) {
+		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+		
+		for(String attributeName : selectedAdherenceAttributes) {
+			// Numeric Attributes
+			if(ADHERENCE_NUMERIC_ATTRIBUTES.contains(attributeName)) {
+				attributes.add(new Attribute(attributeName));
+			}
+			
+			// Categorical Attributes
+			if(ADHERENCE_CATEGORITCAL_ATTRIBUTES.containsKey(attributeName)) {
+				attributes.add(new Attribute(attributeName, Arrays.asList(ADHERENCE_CATEGORITCAL_ATTRIBUTES.get(attributeName))));
+			}
+		}	
+		
 		return attributes;
 	}
 }

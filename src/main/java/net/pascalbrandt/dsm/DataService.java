@@ -134,21 +134,6 @@ public class DataService implements ApplicationContextAware {
 		
 		
 	}
-
-	public List<Attribute> constructAttributeList(SVMConfigurationForm config) {
-		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
-		
-		// Demographic Attributes
-		attributes.add(DemographicAttributeFactory.createAttributes(config.getSelectedDemographicAttributes()));
-		
-		// Clinical Attributes
-		
-		// Adherence Attributes
-		
-		// Other Attributes
-				
-		// Class Attribute
-	}
 	
 	public Instances buildPatientTrainingDataset(String dataset, SVMConfigurationForm config) {
 		logger.info("Building Patient Training Dataset");

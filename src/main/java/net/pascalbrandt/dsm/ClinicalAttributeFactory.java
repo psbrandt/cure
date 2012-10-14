@@ -3,17 +3,21 @@ package net.pascalbrandt.dsm;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import weka.core.Attribute;
 
 public class ClinicalAttributeFactory {
 	// Numeric Attributes
-	public static String[] CLINCAL_NUMERIC_ATTRIBUTES = { "Baseline CD4",
-			"Pre-Resistance Testing CD4 Count",
-			"Pre-Resistance Testing Viral Load", "Time on Failing Regimen",
-			"Recent Blood Creatinine Clearance", "Recent Blood ALT", "Recent Blood HB" };
+	public static final Set<String> CLINICAL_NUMERIC_ATTRIBUTES = new HashSet<String>(Arrays.asList(
+		     new String[] {"Baseline CD4",
+		 			"Pre-Resistance Testing CD4 Count",
+					"Pre-Resistance Testing Viral Load", "Time on Failing Regimen",
+					"Recent Blood Creatinine Clearance", "Recent Blood ALT", "Recent Blood HB"}
+	));	
 
 	// Categortical Attributes
 	public static Map<String, String[]> CLINICAL_CATEGORITCAL_ATTRIBUTES = new HashMap<String, String[]>();
@@ -50,7 +54,7 @@ public class ClinicalAttributeFactory {
 		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 
 		// Numeric Attributes
-		for (String name : CLINCAL_NUMERIC_ATTRIBUTES) {
+		for (String name : CLINICAL_NUMERIC_ATTRIBUTES) {
 			attributes.add(new Attribute(name));
 		}
 
@@ -67,7 +71,7 @@ public class ClinicalAttributeFactory {
 		ArrayList<String> attributes = new ArrayList<String>();
 
 		// Numeric Attributes
-		for (String name : CLINCAL_NUMERIC_ATTRIBUTES) {
+		for (String name : CLINICAL_NUMERIC_ATTRIBUTES) {
 			attributes.add(name);
 		}
 
@@ -76,6 +80,24 @@ public class ClinicalAttributeFactory {
 			attributes.add(name);
 		}
 
+		return attributes;
+	}
+	
+	public static List<Attribute> createAttributes(String[] selectedClinicalAttributes) {
+		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+		
+		for(String attributeName : selectedClinicalAttributes) {
+			// Numeric Attributes
+			if(CLINICAL_NUMERIC_ATTRIBUTES.contains(attributeName)) {
+				attributes.add(new Attribute(attributeName));
+			}
+			
+			// Categorical Attributes
+			if(CLINICAL_CATEGORITCAL_ATTRIBUTES.containsKey(attributeName)) {
+				attributes.add(new Attribute(attributeName, Arrays.asList(CLINICAL_CATEGORITCAL_ATTRIBUTES.get(attributeName))));
+			}
+		}	
+		
 		return attributes;
 	}
 }

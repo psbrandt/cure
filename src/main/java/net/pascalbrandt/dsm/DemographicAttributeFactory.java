@@ -3,18 +3,24 @@ package net.pascalbrandt.dsm;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import weka.core.Attribute;
 
 public class DemographicAttributeFactory {
 
 	// Numeric Attributes
-	public static String[] DEMOGRAPHIC_NUMERIC_ATTRIBUTES = {"Age", "Weight"};
+	public static final Set<String> DEMOGRAPHIC_NUMERIC_ATTRIBUTES = new HashSet<String>(Arrays.asList(
+		     new String[] {"Age", "Weight"}
+		));	
 	
 	// Categortical Attributes
 	public static Map<String, String[]> DEMOGRAPHIC_CATEGORITCAL_ATTRIBUTES = new HashMap<String, String[]>();
+	
+
 	
 	static {
 		DEMOGRAPHIC_CATEGORITCAL_ATTRIBUTES.put("Gender", new String[] {"Male", "Female"});
@@ -264,9 +270,20 @@ public class DemographicAttributeFactory {
 
 	public static List<Attribute> createAttributes(String[] selectedDemographicAttributes) {
 		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
-			
 		
-		return null;
+		for(String attributeName : selectedDemographicAttributes) {
+			// Numeric Attributes
+			if(DEMOGRAPHIC_NUMERIC_ATTRIBUTES.contains(attributeName)) {
+				attributes.add(new Attribute(attributeName));
+			}
+			
+			// Categorical Attributes
+			if(DEMOGRAPHIC_CATEGORITCAL_ATTRIBUTES.containsKey(attributeName)) {
+				attributes.add(new Attribute(attributeName, Arrays.asList(DEMOGRAPHIC_CATEGORITCAL_ATTRIBUTES.get(attributeName))));
+			}
+		}	
+		
+		return attributes;
 	}
 			
 }

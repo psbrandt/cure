@@ -68,7 +68,7 @@ public class SVMController implements ApplicationContextAware {
 		logger.info("C: " + config.getC());
 		logger.info("Attrs" + config.getSelectedDemographicAttributes().length);
 		
-		model.addAttribute("evalSummary", ss.evaluateClassifier(config).toSummaryString("", true));
+		ss.evaluateClassifier(config);
 		
 		/*
 		model.addAttribute("evalSummary", eval.toSummaryString("", true));	

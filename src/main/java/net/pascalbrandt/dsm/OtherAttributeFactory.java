@@ -3,15 +3,19 @@ package net.pascalbrandt.dsm;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import weka.core.Attribute;
 
 public class OtherAttributeFactory {
 	// Numeric Attributes
-	public static String[] OTHER_NUMERIC_ATTRIBUTES = { };
-
+	public static final Set<String> OTHER_NUMERIC_ATTRIBUTES = new HashSet<String>(Arrays.asList(
+		     new String[] { }
+	));	
+	
 	// Categortical Attributes
 	public static Map<String, String[]> OTHER_CATEGORITCAL_ATTRIBUTES = new HashMap<String, String[]>();
 
@@ -78,6 +82,24 @@ public class OtherAttributeFactory {
 			attributes.add(name);
 		}
 
+		return attributes;
+	}
+	
+	public static List<Attribute> createAttributes(String[] selectedOtherAttributes) {
+		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+		
+		for(String attributeName : selectedOtherAttributes) {
+			// Numeric Attributes
+			if(OTHER_NUMERIC_ATTRIBUTES.contains(attributeName)) {
+				attributes.add(new Attribute(attributeName));
+			}
+			
+			// Categorical Attributes
+			if(OTHER_CATEGORITCAL_ATTRIBUTES.containsKey(attributeName)) {
+				attributes.add(new Attribute(attributeName, Arrays.asList(OTHER_CATEGORITCAL_ATTRIBUTES.get(attributeName))));
+			}
+		}	
+		
 		return attributes;
 	}
 }
