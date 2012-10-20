@@ -58,7 +58,7 @@ public class SVMController implements ApplicationContextAware {
 		
 		//Evaluation eval = ss.classify(type, kernel, gamma, C);
 		
-		//Evaluation CVeval = ss.crossValidate(type, kernel, gamma, C, 10, new Random((long) Math.random()));
+		Evaluation CVeval = ss.crossValidateClassifier(config, 10, new Random((long) Math.random()));
 		
 		//SVMConfigurationForm conf = (SVMConfigurationForm)model.
 		
@@ -68,11 +68,12 @@ public class SVMController implements ApplicationContextAware {
 		logger.info("C: " + config.getC());
 		logger.info("Attrs" + config.getSelectedDemographicAttributes().length);
 		
-		ss.evaluateClassifier(config);
+		//Evaluation eval = ss.evaluateClassifier(config);
+		
+		
+		//model.addAttribute("evalSummary", eval.toSummaryString("", true));	
 		
 		/*
-		model.addAttribute("evalSummary", eval.toSummaryString("", true));	
-		
 		try {
 	        model.addAttribute("evalDetail", eval.toClassDetailsString());
         }
@@ -83,7 +84,7 @@ public class SVMController implements ApplicationContextAware {
 		model.addAttribute("evalConfusionMatrix", createConfusionMatrixString(eval.confusionMatrix()));
 		*/	
 			
-		/*
+		
 		model.addAttribute("CVSummary", CVeval.toSummaryString("", true));	
 		
 		try {
@@ -94,7 +95,7 @@ public class SVMController implements ApplicationContextAware {
         }
 		
 		model.addAttribute("CVConfusionMatrix", createConfusionMatrixString(CVeval.confusionMatrix()));
-		*/
+		
 		
 		return "displayresults";
 	}

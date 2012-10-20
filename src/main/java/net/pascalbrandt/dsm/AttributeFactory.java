@@ -5,17 +5,21 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import net.pascalbrandt.dsm.web.fbo.SVMConfigurationForm;
+import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientAttributeValue;
 
 import weka.core.Attribute;
+import weka.core.Instance;
 
 public class AttributeFactory {
 	private static final Logger logger = LoggerFactory.getLogger(AttributeFactory.class);
 	
 	public AttributeFactory() {	}
 	
-	public static List<Attribute> constructAttributeList(SVMConfigurationForm config) {
+	public static ArrayList<Attribute> constructAttributeList(SVMConfigurationForm config) {
 		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 		
 		// Demographic Attributes
@@ -31,7 +35,7 @@ public class AttributeFactory {
 		attributes.addAll(OtherAttributeFactory.createAttributes(config.getSelectedOtherAttributes()));		
 		
 		// Class Attribute
-		attributes.add(ClassAttributeFactory.CLASS_ATTRIBUTE_INDEX, ClassAttributeFactory.getClassAttibute());
+		attributes.add(ClassAttributeFactory.CLASS_ATTRIBUTE_INDEX, ClassAttributeFactory.getClassAttribute());
 		
 		return attributes;
 	}
@@ -75,5 +79,54 @@ public class AttributeFactory {
 	
 	public static List<String> getOtherAttributeNames() {
 		return OtherAttributeFactory.getOtherAttributeNames();
+	}
+	
+	public static void addAttributeValue(Attribute attribute, Instance instance, Patient patient, RegaService rs) {
+		Instance dummy;
+		
+		// Adherence
+		dummy = AdherenceAttributeFactory.addAttributeValue(attribute, instance, patient, rs);
+		if (dummy != null) return;
+		
+		// Class
+		dummy = ClassAttributeFactory.addAttributeValue(attribute, instance, patient, rs);		
+		if (dummy != null) return;
+			
+		// Clinical
+		dummy = ClinicalAttributeFactory.addAttributeValue(attribute, instance, patient, rs);		
+		if (dummy != null) return;
+			
+		// Demographic
+		dummy = DemographicAttributeFactory.addAttributeValue(attribute, instance, patient, rs);		
+		if (dummy != null) return;
+			
+		// Other
+		OtherAttributeFactory.addAttributeValue(attribute, instance, patient, rs);		
+	}
+	
+	public static void setSimpleCategoricalAttributeValue(Attribute attribute, String regaAttributeName, Instance instance, Patient patient, RegaService rs) {
+		logger.info("Setting value for categorical attribute: " + attribute.name());
+		
+		PatientAttributeValue pav = rs.getPatientAttributeValue(patient, regaAttributeName);
+		
+		String value = null;
+		if (pav != null)
+			value = pav.getValue();
+		
+		if(StringUtils.hasLength(value))
+			instance.setValue(attribute, value);
+	}
+	
+	public static void setSimpleNumericAttributeValue(Attribute attribute, String regaAttributeName, Instance instance, Patient patient, RegaService rs) {
+		logger.info("Setting value for numeric attribute: " + attribute.name());
+		
+		PatientAttributeValue pav = rs.getPatientAttributeValue(patient, regaAttributeName);
+		
+		String value = null;
+		if (pav != null)
+			value = pav.getValue();
+		
+		if(StringUtils.hasLength(value))
+			instance.setValue(attribute, Double.parseDouble(value));
 	}
 }

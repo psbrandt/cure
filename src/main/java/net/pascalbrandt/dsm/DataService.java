@@ -96,10 +96,10 @@ public class DataService implements ApplicationContextAware {
 		
 		if (rs.isResistantToTherapy(therapyAtGSSTestDate, results)) {
 			logger.info("Resistance detected");
-			return CLASS_RESISTANT;
+			return ClassAttributeFactory.CLASS_ATTRIBUTE_RESISTANT;
 		} else {
 			logger.info("No resistance detected");
-			return CLASS_NOT_RESISTANT;
+			return ClassAttributeFactory.CLASS_ATTRIBUTE_NOT_RESISTANT;
 		}
 			
 		//return CLASS_UNLABELED;
@@ -140,6 +140,34 @@ public class DataService implements ApplicationContextAware {
 		// 
 		
 		return null;
+	}
+	
+	public Instances getPatientTrainingInstances(String datasetDescriptor, ArrayList<Attribute> attributes) {
+		logger.info("Building Patient Training Instances");
+		
+		Instances data = new Instances("Patient Dataset", attributes, ClassAttributeFactory.CLASS_ATTRIBUTE_INDEX);
+		
+		RegaService rs = context.getBean(RegaService.class);
+		List<Patient> patients = null;
+		
+		try {
+			patients = rs.getPatients(rs.getDataset(datasetDescriptor));
+        }
+        catch (Exception e) {
+	        logger.error(e.getMessage());
+	        e.printStackTrace();
+	        return null;
+        }
+		
+		int i = 0;
+		for (Patient p : patients) {
+			logger.info("Adding patient["+ i++ +"]: " + p.getPatientId());
+			data.add(constuctInstanceFromPatient(p, attributes));
+		}
+		
+		data.setClassIndex(ClassAttributeFactory.CLASS_ATTRIBUTE_INDEX);
+		
+		return data;
 	}
 	
 	/**
@@ -201,6 +229,17 @@ public class DataService implements ApplicationContextAware {
 		
 		
 		return labelCount;
+	}
+	
+	public Instance constuctInstanceFromPatient(Patient patient, ArrayList<Attribute> attributes) {
+		// Use a sparce vector because we may not have all values for this patient
+		Instance instance = new SparseInstance(attributes.size());
+		
+		for (Attribute a : attributes) {
+			AttributeFactory.addAttributeValue(a, instance, patient, context.getBean(RegaService.class));
+		}
+		
+		return instance;
 	}
 	
 	/**

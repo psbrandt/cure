@@ -1,5 +1,6 @@
 package net.pascalbrandt.dsm;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,23 +62,70 @@ public class SVMService implements ApplicationContextAware {
 		// Initialize the SVM
 		svm = getSVM();
 		
+		// FIXME: Figure this out!
+		//svm.setNu(0.001);
+		
 		// Set the parameters
 		svm = setParameters(svm, config.getType(), config.getKernel(), config.getGamma(), config.getC());
 		
 		// Build attribute vector
-		List<Attribute> attributes = AttributeFactory.constructAttributeList(config);
+		ArrayList<Attribute> attributes = AttributeFactory.constructAttributeList(config);
 		
+		// FIXME: This is just for debugging
 		AttributeFactory.displayAttributeList(attributes);
 		
 		// Train
-		//DataService ds = context.getBean(DataService.class);
+		DataService ds = context.getBean(DataService.class);
 		//Instances trainingData = ds.getTrainingData();
-		//Instances trainingData = ds.getPatientTrainingData(RegaService.AC_FAILURE_CLINIC_DATASET_DESCRIPTOR);
-		//svm = train(svm, trainingData);		
+		Instances trainingData = ds.getPatientTrainingInstances(RegaService.AC_FAILURE_CLINIC_DATASET_DESCRIPTOR, attributes);
+		svm = train(svm, trainingData);		
 		
 		// Test
-		return null;//testSVM(svm, trainingData);
+		return testSVM(svm, trainingData);
 	}
+	
+	public Evaluation crossValidateClassifier(SVMConfigurationForm config, int numFolds, Random random) {
+		logger.info("Cross Validating SVM with " + numFolds + " folds");
+		
+		// Initialize the SVM
+		svm = getSVM();
+		
+		// Set the parameters
+		svm = setParameters(svm, config.getType(), config.getKernel(), config.getGamma(), config.getC());
+		
+		// Build attribute vector
+		ArrayList<Attribute> attributes = AttributeFactory.constructAttributeList(config);
+		
+		// FIXME: This is just for debugging
+		AttributeFactory.displayAttributeList(attributes);
+
+		// Train
+		DataService ds = context.getBean(DataService.class);
+
+		Instances trainingData = ds.getPatientTrainingInstances(RegaService.AC_FAILURE_CLINIC_DATASET_DESCRIPTOR, attributes);
+
+		svm = train(svm, trainingData);		
+		
+		Evaluation eval = null;
+		try {
+	        eval = new Evaluation(trainingData);
+        }
+        catch (Exception e) {
+        	logger.error(e.getMessage());
+	        e.printStackTrace();
+        }
+		
+		try {
+	        eval.crossValidateModel(svm, trainingData, numFolds, random);
+        }
+        catch (Exception e) {
+        	logger.error(e.getMessage());
+	        e.printStackTrace();
+        }
+		
+		return eval;
+	}	
+	
 	
 	public Evaluation classify(Integer type, Integer kernel, Double gamma, Double C) {
 		logger.info("Classifying");

@@ -10,18 +10,22 @@ import net.pascalbrandt.dsm.web.controller.HomeController;
 import net.sf.regadb.db.Dataset;
 import net.sf.regadb.db.DrugGeneric;
 import net.sf.regadb.db.Patient;
+import net.sf.regadb.db.PatientAttributeValue;
 import net.sf.regadb.db.TestResult;
 import net.sf.regadb.db.Therapy;
 import net.sf.regadb.db.TherapyGeneric;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
 @Service("RegaService")
-public class RegaService {
+public class RegaService implements ApplicationContextAware {
 	public static final String REGA_ATTRIBUTE_GENDER = "Gender";
 	public static final String REGA_ATTRIBUTE_ETHNICITY = "Ethnicity";
 	public static final String REGA_ATTRIBUTE_AGE = "Age";
@@ -39,6 +43,8 @@ public class RegaService {
 	public static final Integer GSS_TEST_3_ID = 51;
 	
 	public static final String AC_FAILURE_CLINIC_DATASET_DESCRIPTOR = "AC_Failure Management Clinic";
+	
+	ApplicationContext context;
 	
 	@Autowired
 	@Qualifier("RegaDAO")
@@ -185,5 +191,27 @@ public class RegaService {
 		}
 		
 		return latestGSSResults;
+	}
+	
+	public PatientAttributeValue getPatientAttributeValue(Patient patient, String attribute) {
+		Set<PatientAttributeValue> patientAttributes = patient.getPatientAttributeValues();
+		
+		for(PatientAttributeValue pav : patientAttributes) {
+			if(pav.getAttribute().getName().equals(attribute)) {
+				return pav;
+			}
+		}
+		
+		return null;
+	}
+	
+	public String classifyPatient(Patient patient) {
+		return context.getBean(DataService.class).classifyPatient(patient);
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		context = applicationContext;
 	}
 }

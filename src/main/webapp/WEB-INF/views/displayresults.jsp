@@ -61,12 +61,12 @@
     <div class="container">
 
       	<h1>Support Vector Machine Classification Results</h1> <br/>
-      	
+      	<!-- 
       	<p>
       		<h3>Summary</h3>
       		<pre>${evalSummary}</pre>      		
       	</p>
-      	<!-- 
+      	
       	<p>
       		<h3>Detail</h3>
       		<pre>${evalDetail}</pre>      		
@@ -75,11 +75,12 @@
       		<h3>Confusion Matrix</h3>
       		<pre>${evalConfusionMatrix}</pre>
       	</p>
-      	
+      	-->
       	<p>
       		<h3>Cross Validation Summary</h3>
       		<pre>${CVSummary}</pre>      		
       	</p>
+      	
       	<p>
       		<h3>Cross Validation Detail</h3>
       		<pre>${CVDetail}</pre>      		
@@ -88,7 +89,7 @@
       		<h3>Cross Validation Confusion Matrix</h3>
       		<pre>${CVConfusionMatrix}</pre>
       	</p>
-      	-->
+      	
 	 
     </div> <!-- /container -->
 
