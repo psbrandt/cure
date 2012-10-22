@@ -319,7 +319,10 @@
 		    <!-- Submit -->
 		    
 		    <div class="form-actions">
-		    	<button type="submit" class="btn btn-primary">Classify</button>
+		    	<div class="btn-group">
+			    	<button type="submit" class="btn btn-primary" name="submitButton" value="Classify">Classify</button>
+			    	<button type="submit" class="btn btn-primary" name="submitButton" value="ARFF">Generate ARFF File</button>
+		    	</div>
 		    </div>
 		  </fieldset>
 		 </form:form>
