@@ -58,7 +58,7 @@ public class SVMService implements ApplicationContextAware {
 
     public String generateARFFFile(SVMConfigurationForm config) {
         // Build attribute vector
-        ArrayList<Attribute> attributes = AttributeFactory.constructAttributeList(config);
+        ArrayList<Attribute> attributes = AttributeFactory.constructAttributeList(config, context.getBean(RuleService.class));
 
         // Get Instances
         DataService ds = context.getBean(DataService.class);
@@ -138,7 +138,7 @@ public class SVMService implements ApplicationContextAware {
                 config.getC());
 
         // Build attribute vector
-        ArrayList<Attribute> attributes = AttributeFactory.constructAttributeList(config);
+        ArrayList<Attribute> attributes = AttributeFactory.constructAttributeList(config, context.getBean(RuleService.class));
 
         // FIXME: This is just for debugging
         AttributeFactory.displayAttributeList(attributes);
@@ -166,7 +166,7 @@ public class SVMService implements ApplicationContextAware {
                 config.getC());
 
         // Build attribute vector
-        ArrayList<Attribute> attributes = AttributeFactory.constructAttributeList(config);
+        ArrayList<Attribute> attributes = AttributeFactory.constructAttributeList(config, context.getBean(RuleService.class));
 
         // FIXME: This is just for debugging
         AttributeFactory.displayAttributeList(attributes);

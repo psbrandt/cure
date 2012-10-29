@@ -48,9 +48,9 @@ public class DemographicAttributeFactory {
 
     static {
         DEMOGRAPHIC_CATEGORITCAL_ATTRIBUTES.put(DEMOGRAPHIC_PRETTY_ATTRIBUTE_GENDER, new String[] {
-                "Male", "Female" });
+                "male", "female" });
         DEMOGRAPHIC_CATEGORITCAL_ATTRIBUTES.put(DEMOGRAPHIC_PRETTY_ATTRIBUTE_ETHNICITY,
-                new String[] { "African", "Asian", "Caucasian" });
+                new String[] { "african", "asian", "caucasian" });
         DEMOGRAPHIC_CATEGORITCAL_ATTRIBUTES.put(DEMOGRAPHIC_PRETTY_ATTRIBUTE_PROVINCE,
                 new String[] { "Western Cape", "Gauteng", "North West", "Limpopo", "KwaZulu-Natal",
                         "Northern Cape", "Free State", "Eastern Cape", "Mapumalanga" });

@@ -68,7 +68,7 @@ public class OtherAttributeFactory {
         OTHER_CATEGORITCAL_ATTRIBUTES.put(OTHER_PRETTY_ATTRIBUTE_TB_TREATMENT_SOON, new String[] {
                 "Yes", "No" });
         OTHER_CATEGORITCAL_ATTRIBUTES.put(OTHER_PRETTY_ATTRIBUTE_PARTNER_ON_TREATMENT,
-                new String[] { "Yes", "No" });
+                new String[] { "Yes", "No", "Unk" });
         OTHER_CATEGORITCAL_ATTRIBUTES.put(OTHER_PRETTY_ATTRIBUTE_EXPOSURE_TO_SDNVP, new String[] {
                 "Yes", "No" });
 

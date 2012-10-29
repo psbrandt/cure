@@ -7,42 +7,47 @@ import org.springframework.web.bind.annotation.RequestParam;
 import net.pascalbrandt.dsm.AttributeFactory;
 
 public class SVMConfigurationForm {
-	
-	Integer type;				// Type of SVM
-	Integer kernel;				// Type of Kernel
-	Double gamma;				// Gamma Value
-	Double C;					// C Values
-	
+
+	Integer type; // Type of SVM
+	Integer kernel; // Type of Kernel
+	Double gamma; // Gamma Value
+	Double C; // C Values
+
 	String[] selectedDemographicAttributes;
 	String[] selectedClinicalAttributes;
 	String[] selectedAdherenceAttributes;
 	String[] selectedOtherAttributes;
-	
-	
-	
-	public SVMConfigurationForm () {
-		
-		// Default to all demographic attributes selected
-		List<String> attributeDemographicNames = AttributeFactory.getDemographicAttributeNames();		
-		selectedDemographicAttributes = attributeDemographicNames.toArray(new String[attributeDemographicNames.size()]);
-		
-		// Default to all demographic attributes selected
-		List<String> attributeClinicalNames = AttributeFactory.getClinicalAttributeNames();		
-		selectedClinicalAttributes = attributeClinicalNames.toArray(new String[attributeClinicalNames.size()]);
+
+	public SVMConfigurationForm() {
 
 		// Default to all demographic attributes selected
-		List<String> attributeAdherenceNames = AttributeFactory.getAdherenceAttributeNames();		
-		selectedAdherenceAttributes = attributeAdherenceNames.toArray(new String[attributeAdherenceNames.size()]);
+		List<String> attributeDemographicNames = AttributeFactory
+				.getDemographicAttributeNames();
+		selectedDemographicAttributes = attributeDemographicNames
+				.toArray(new String[attributeDemographicNames.size()]);
 
 		// Default to all demographic attributes selected
-		List<String> attributeOtherNames = AttributeFactory.getOtherAttributeNames();		
-		selectedOtherAttributes = attributeOtherNames.toArray(new String[attributeOtherNames.size()]);
-		
-		
+		List<String> attributeClinicalNames = AttributeFactory
+				.getClinicalAttributeNames();
+		selectedClinicalAttributes = attributeClinicalNames
+				.toArray(new String[attributeClinicalNames.size()]);
+
+		// Default to all demographic attributes selected
+		List<String> attributeAdherenceNames = AttributeFactory
+				.getAdherenceAttributeNames();
+		selectedAdherenceAttributes = attributeAdherenceNames
+				.toArray(new String[attributeAdherenceNames.size()]);
+
+		// Default to all demographic attributes selected
+		List<String> attributeOtherNames = AttributeFactory
+				.getOtherAttributeNames();
+		selectedOtherAttributes = attributeOtherNames
+				.toArray(new String[attributeOtherNames.size()]);
+
 		// Default values for the RBF parameters
 		gamma = new Double(1);
 		C = new Double(1);
-	}	
+	}
 
 	public String[] getSelectedDemographicAttributes() {
 		return selectedDemographicAttributes;
@@ -88,7 +93,8 @@ public class SVMConfigurationForm {
 		return selectedClinicalAttributes;
 	}
 
-	public void setSelectedClinicalAttributes(String[] selectedClinicalAttributes) {
+	public void setSelectedClinicalAttributes(
+			String[] selectedClinicalAttributes) {
 		this.selectedClinicalAttributes = selectedClinicalAttributes;
 	}
 
@@ -96,7 +102,8 @@ public class SVMConfigurationForm {
 		return selectedAdherenceAttributes;
 	}
 
-	public void setSelectedAdherenceAttributes(String[] selectedAdherenceAttributes) {
+	public void setSelectedAdherenceAttributes(
+			String[] selectedAdherenceAttributes) {
 		this.selectedAdherenceAttributes = selectedAdherenceAttributes;
 	}
 

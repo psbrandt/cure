@@ -1,7 +1,7 @@
 package net.pascalbrandt.dsm.web.controller;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 
@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.pascalbrandt.dsm.AttributeFactory;
 import net.pascalbrandt.dsm.SVMService;
 import net.pascalbrandt.dsm.web.fbo.SVMConfigurationForm;
+import net.sf.regadb.util.date.DateUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,11 @@ public class SVMController implements ApplicationContextAware {
         logger.info("Generating ARFF File");
 
         response.setContentType("text/plain");
-        response.setHeader("Content-Disposition", "attachment;filename=rega.arff");
+        
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_kk.mm.ss");
+        String filename = "regadb_acfmc_" + df.format(new Date()) + ".arff";
+        
+        response.setHeader("Content-Disposition", "attachment;filename=" + filename);
 
         SVMService ss = context.getBean(SVMService.class);
         
@@ -93,7 +98,7 @@ public class SVMController implements ApplicationContextAware {
 
         // Evaluation eval = ss.classify(type, kernel, gamma, C);
 
-        Evaluation CVeval = ss
+        Evaluation CVeval = ss//.evaluateClassifier(config);
                 .crossValidateClassifier(config, 10, new Random((long) Math.random()));
 
         // SVMConfigurationForm conf = (SVMConfigurationForm)model.

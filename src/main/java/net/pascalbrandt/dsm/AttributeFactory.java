@@ -17,11 +17,14 @@ import weka.core.Instance;
 public class AttributeFactory {
     private static final Logger logger = LoggerFactory.getLogger(AttributeFactory.class);
 
+    public static final String ATTRIBUTE_VALUE_YES = "Yes";
+    public static final String ATTRIBUTE_VALUE_NO = "No";
+    
     public AttributeFactory() {
     }
 
     // Build the list of training attributes based on the selected values
-    public static ArrayList<Attribute> constructAttributeList(SVMConfigurationForm config) {
+    public static ArrayList<Attribute> constructAttributeList(SVMConfigurationForm config, RuleService ruleService) {
         ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 
         // Demographic Attributes
@@ -30,7 +33,7 @@ public class AttributeFactory {
 
         // Clinical Attributes
         attributes.addAll(ClinicalAttributeFactory.createAttributes(config
-                .getSelectedClinicalAttributes()));
+                .getSelectedClinicalAttributes(), ruleService));
 
         // Adherence Attributes
         attributes.addAll(AdherenceAttributeFactory.createAttributes(config
@@ -118,21 +121,26 @@ public class AttributeFactory {
 
     public static void setSimpleCategoricalAttributeValue(Attribute attribute,
             String regaAttributeName, Instance instance, Patient patient, RegaService rs) {
-        logger.info("Setting value for categorical attribute: " + attribute.name());
+        //logger.info("Setting value for categorical attribute: " + attribute.name());
 
         PatientAttributeValue pav = rs.getPatientAttributeValue(patient, regaAttributeName);
 
         String value = null;
-        if (pav != null)
-            value = pav.getValue();
+        
+        if (pav != null) {
+            value = pav.getAttributeNominalValue().getValue();
+            //logger.info("> value: " + value);
+        }
 
-        if (StringUtils.hasLength(value))
+        if (StringUtils.hasLength(value)) {
             instance.setValue(attribute, value);
+            logger.info("Setting attribute value: " + attribute.name() + " -> " + value);
+        }
     }
 
     public static void setSimpleNumericAttributeValue(Attribute attribute,
             String regaAttributeName, Instance instance, Patient patient, RegaService rs) {
-        logger.info("Setting value for numeric attribute: " + attribute.name());
+        //logger.info("Setting value for numeric attribute: " + attribute.name());
 
         PatientAttributeValue pav = rs.getPatientAttributeValue(patient, regaAttributeName);
 
@@ -140,7 +148,9 @@ public class AttributeFactory {
         if (pav != null)
             value = pav.getValue();
 
-        if (StringUtils.hasLength(value))
+        if (StringUtils.hasLength(value)) {
             instance.setValue(attribute, Double.parseDouble(value));
+            logger.info("Setting attribute value: " + attribute.name() + " -> " + Double.parseDouble(value));
+        }
     }
 }
