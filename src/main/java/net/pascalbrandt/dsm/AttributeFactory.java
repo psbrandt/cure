@@ -37,11 +37,11 @@ public class AttributeFactory {
 
         // Adherence Attributes
         attributes.addAll(AdherenceAttributeFactory.createAttributes(config
-                .getSelectedAdherenceAttributes()));
+                .getSelectedAdherenceAttributes(), ruleService));
 
         // Other Attributes
         attributes.addAll(OtherAttributeFactory.createAttributes(config
-                .getSelectedOtherAttributes()));
+                .getSelectedOtherAttributes(), ruleService));
 
         // Class Attribute
         attributes.add(ClassAttributeFactory.CLASS_ATTRIBUTE_INDEX,
@@ -95,6 +95,8 @@ public class AttributeFactory {
             RegaService rs) {
         Instance dummy;
 
+        //logger.info("@@ Setting value for attribute: " + attribute.name());
+        
         // Adherence
         dummy = AdherenceAttributeFactory.addAttributeValue(attribute, instance, patient, rs);
         if (dummy != null)
