@@ -9,11 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import net.pascalbrandt.dsm.rule.Rule;
+import net.pascalbrandt.dsm.rule.impl.OtherDrugRuleImpl;
+import net.pascalbrandt.dsm.rule.impl.TreatmentBreakRuleImpl;
 import net.sf.regadb.db.Patient;
 import net.sf.regadb.db.PatientAttributeValue;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import weka.core.Attribute;
 import weka.core.Instance;
@@ -64,30 +67,30 @@ public class AdherenceAttributeFactory {
 	static {
 		ADHERENCE_CATEGORITCAL_ATTRIBUTES.put(
 				ADHERENCE_PRETTY_ATTRIBUTE_PATIENT_ESTIMATED_ADHERENCE,
-				new String[] { "Less Good", "Poor", "Good", "None" });
+				new String[] { "dummy", "Less Good", "Poor", "Good", "None" });
 		ADHERENCE_CATEGORITCAL_ATTRIBUTES.put(
 				ADHERENCE_PRETTY_ATTRIBUTE_REMEMBER,
-				new String[] { "Yes", "No" });
+				new String[] { "dummy", "Yes", "No" });
 		ADHERENCE_CATEGORITCAL_ATTRIBUTES.put(ADHERENCE_PRETTY_ATTRIBUTE_STOP,
-				new String[] { "Yes", "No" });
+				new String[] { "dummy", "Yes", "No" });
 		ADHERENCE_CATEGORITCAL_ATTRIBUTES
-				.put(ADHERENCE_PRETTY_ATTRIBUTE_MISSED, new String[] { "Yes",
+				.put(ADHERENCE_PRETTY_ATTRIBUTE_MISSED, new String[] { "dummy", "Yes",
 						"No" });
 		ADHERENCE_CATEGORITCAL_ATTRIBUTES.put(
-				ADHERENCE_PRETTY_ATTRIBUTE_WORST_STOP, new String[] { "Yes",
+				ADHERENCE_PRETTY_ATTRIBUTE_WORST_STOP, new String[] { "dummy", "Yes",
 						"No" });
 		ADHERENCE_CATEGORITCAL_ATTRIBUTES.put(ADHERENCE_PRETTY_ATTRIBUTE_NAMES,
 				new String[] { "Yes", "No" });
 		ADHERENCE_CATEGORITCAL_ATTRIBUTES.put(
-				ADHERENCE_PRETTY_ATTRIBUTE_SIDE_EFFECTS, new String[] { "Yes",
+				ADHERENCE_PRETTY_ATTRIBUTE_SIDE_EFFECTS, new String[] { "dummy", "Yes",
 						"No" });
 		ADHERENCE_CATEGORITCAL_ATTRIBUTES.put(
-				ADHERENCE_PRETTY_ATTRIBUTE_DISCLOSURE, new String[] { "Yes",
+				ADHERENCE_PRETTY_ATTRIBUTE_DISCLOSURE, new String[] { "dummy", "Yes",
 						"No" });
 		ADHERENCE_CATEGORITCAL_ATTRIBUTES.put(ADHERENCE_PRETTY_ATTRIBUTE_BUDDY,
-				new String[] { "Yes", "No" });
+				new String[] { "dummy", "Yes", "No" });
 		ADHERENCE_CATEGORITCAL_ATTRIBUTES.put(
-				ADHERENCE_PRETTY_ATTRIBUTE_COUNSELING, new String[] { "Yes",
+				ADHERENCE_PRETTY_ATTRIBUTE_COUNSELING, new String[] { "dummy", "Yes",
 						"No" });
 
 		ADHERENCE_ATTRIBUTES_REGA_MAP.put(
@@ -154,7 +157,7 @@ public class AdherenceAttributeFactory {
 
 	// Create attributes for the given list of attribute names
 	public static List<Attribute> createAttributes(
-			String[] selectedAdherenceAttributes) {
+			String[] selectedAdherenceAttributes, RuleService ruleService) {
 		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 
 		for (String attributeName : selectedAdherenceAttributes) {
@@ -168,6 +171,15 @@ public class AdherenceAttributeFactory {
 				attributes.add(new Attribute(attributeName, Arrays
 						.asList(ADHERENCE_CATEGORITCAL_ATTRIBUTES
 								.get(attributeName))));
+			} else {
+				// Calculated Numeric Attributes
+
+				if (attributeName.equals(
+						ADHERENCE_PRETTY_ATTRIBUTE_TREATMENT_BREAK)) {
+					// Treatment Break
+					ruleService.addRule(TreatmentBreakRuleImpl.class,
+							new TreatmentBreakRuleImpl(ruleService));	
+				}
 			}
 		}
 
@@ -228,22 +240,10 @@ public class AdherenceAttributeFactory {
 	public static void setAttributeValueTreatmentBreak(Attribute attribute,
 			Instance instance, Patient patient, RegaService rs) {
 
-		PatientAttributeValue from = rs.getPatientAttributeValue(patient,
-				ADHERENCE_REGA_ATTRIBUTE_TREATMENT_BREAK_FROM);
-		PatientAttributeValue to = rs.getPatientAttributeValue(patient,
-				ADHERENCE_REGA_ATTRIBUTE_TREATMENT_BREAK_TO);
+		Rule treatmentBreakRule = rs.getRuleService().getRule(
+				TreatmentBreakRuleImpl.class);
 
-		if (from != null && to != null) {
-			Date toDate = new Date(Long.parseLong(to.getValue()));
-			Date fromDate = new Date(Long.parseLong(from.getValue()));
-
-			// Calculate date difference in days
-			long diffInDays = (toDate.getTime() - fromDate.getTime())
-					/ (1000 * 60 * 60 * 24);
-
-			logger.info("Setting attribute value: " + attribute.name() + " -> "
-					+ diffInDays);
-			instance.setValue(attribute, diffInDays);
-		}
+		treatmentBreakRule.setAttributeValue(attribute, instance, patient);
+	
 	}
 }

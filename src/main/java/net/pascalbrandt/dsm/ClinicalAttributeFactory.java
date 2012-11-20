@@ -10,6 +10,7 @@ import java.util.Set;
 
 import net.pascalbrandt.dsm.rule.Rule;
 import net.pascalbrandt.dsm.rule.impl.BaselineCD4RuleImpl;
+import net.pascalbrandt.dsm.rule.impl.OtherDrugRuleImpl;
 import net.pascalbrandt.dsm.rule.impl.PreResistanceImmunoFailure;
 import net.pascalbrandt.dsm.rule.impl.PreResistanceTestingCD4RuleImpl;
 import net.pascalbrandt.dsm.rule.impl.PreResistanceTestingViralLoadRuleImpl;
@@ -25,354 +26,420 @@ import weka.core.Attribute;
 import weka.core.Instance;
 
 public class ClinicalAttributeFactory {
-    private static final Logger logger = LoggerFactory.getLogger(ClinicalAttributeFactory.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(ClinicalAttributeFactory.class);
 
-    // Pretty Numeric Attribute Names
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_WEIGHT = "Weight";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_BASELINE_CD4 = "Baseline CD4";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_CD4 = "Pre-Resistance Testing CD4 Count";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_VL = "Pre-Resistance Testing Viral Load";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_TIME_ON_FAILING_REGIMEN = "Time on Failing Regimen";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_CC = "Recent Blood Creatinine Clearance";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_ALT = "Recent Blood ALT";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_HB = "Recent Blood HB";
+	// Pretty Numeric Attribute Names
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_WEIGHT = "Weight";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_BASELINE_CD4 = "Baseline CD4";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_CD4 = "Pre-Resistance Testing CD4 Count";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_VL = "Pre-Resistance Testing Viral Load";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_TIME_ON_FAILING_REGIMEN = "Time on Failing Regimen";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_CC = "Recent Blood Creatinine Clearance";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_ALT = "Recent Blood ALT";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_HB = "Recent Blood HB";
 
-    // Pretty Categorical Attribute Names
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_IMMUNO_FAILURE = "Pre-Resistance Testing Immunological Failure";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_TRANSMISSION_GROUP = "Transmission Group";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_HTLV1_STATUS = "HTLV-1 Status";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_HBV_STATUS = "HBV Status";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_PRIOR = "Tuberculosis Therapy (Prior)";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_DURING = "Tuberculosis Therapy (During)";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_POST = "Tuberculosis Therapy (Post)";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_1 = "Other Drug 1";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_2 = "Other Drug 2";
-    public static final String CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_3 = "Other Drug 3";
+	// Pretty Categorical Attribute Names
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_IMMUNO_FAILURE = "Pre-Resistance Testing Immunological Failure";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_TRANSMISSION_GROUP = "Transmission Group";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_HTLV1_STATUS = "HTLV-1 Status";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_HBV_STATUS = "HBV Status";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_PRIOR = "Tuberculosis Therapy (Prior)";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_DURING = "Tuberculosis Therapy (During)";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_POST = "Tuberculosis Therapy (Post)";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_1 = "Other Drug 1";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_2 = "Other Drug 2";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_3 = "Other Drug 3";
 
-    // Rega Attribute Names
-    public static final String CLINICAL_REGA_ATTRIBUTE_WEIGHT = "Weight";
-    public static final String CLINICAL_REGA_ATTRIBUTE_TRANSMISSION_GROUP = "Transmission group";
-    public static final String CLINICAL_REGA_ATTRIBUTE_HTLV1_STATUS = "HTLV1status";
-    public static final String CLINICAL_REGA_ATTRIBUTE_HBV_STATUS = "9_HBV_status";
-    public static final String CLINICAL_REGA_ATTRIBUTE_TB_THERAPY_PRIOR = "TB_therapy_Regimen_1";
-    public static final String CLINICAL_REGA_ATTRIBUTE_TB_THERAPY_DURING = "TB_therapy_Regimen_2";
-    public static final String CLINICAL_REGA_ATTRIBUTE_TB_THERAPY_POST = "TB_therapy_Regimen_3";
-    public static final String CLINICAL_REGA_ATTRIBUTE_RECENT_BLOOD_CC = "Recent_Blood_Creatinine_Clearance";
-    public static final String CLINICAL_REGA_ATTRIBUTE_RECENT_BLOOD_HB = "Recent_Blood_HB";
-    public static final String CLINICAL_REGA_ATTRIBUTE_RECENT_BLOOD_ALT = "Recent_Blood_ALT";
+	// Rega Attribute Names
+	public static final String CLINICAL_REGA_ATTRIBUTE_WEIGHT = "Weight";
+	public static final String CLINICAL_REGA_ATTRIBUTE_TRANSMISSION_GROUP = "Transmission group";
+	public static final String CLINICAL_REGA_ATTRIBUTE_HTLV1_STATUS = "HTLV1status";
+	public static final String CLINICAL_REGA_ATTRIBUTE_HBV_STATUS = "9_HBV_status";
+	public static final String CLINICAL_REGA_ATTRIBUTE_TB_THERAPY_PRIOR = "TB_therapy_Regimen_1";
+	public static final String CLINICAL_REGA_ATTRIBUTE_TB_THERAPY_DURING = "TB_therapy_Regimen_2";
+	public static final String CLINICAL_REGA_ATTRIBUTE_TB_THERAPY_POST = "TB_therapy_Regimen_3";
+	public static final String CLINICAL_REGA_ATTRIBUTE_RECENT_BLOOD_CC = "Recent_Blood_Creatinine_Clearance";
+	public static final String CLINICAL_REGA_ATTRIBUTE_RECENT_BLOOD_HB = "Recent_Blood_HB";
+	public static final String CLINICAL_REGA_ATTRIBUTE_RECENT_BLOOD_ALT = "Recent_Blood_ALT";
+	public static final String CLINICAL_REGA_ATTRIBUTE_OTHER_DRUG_1 = "Other_medications_1";
+	public static final String CLINICAL_REGA_ATTRIBUTE_OTHER_DRUG_2 = "Other_medications_2";
+	public static final String CLINICAL_REGA_ATTRIBUTE_OTHER_DRUG_3 = "Other_medications_3";
 
-    // Numeric Attributes
-    public static final Set<String> CLINICAL_NUMERIC_ATTRIBUTES = new HashSet<String>(Arrays.asList(new String[] {
-            CLINICAL_PRETTY_ATTRIBUTE_WEIGHT, CLINICAL_PRETTY_ATTRIBUTE_BASELINE_CD4,
-            CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_CD4, CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_VL,
-            CLINICAL_PRETTY_ATTRIBUTE_TIME_ON_FAILING_REGIMEN, CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_CC,
-            CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_ALT, CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_HB }));
+	// Numeric Attributes
+	public static final Set<String> CLINICAL_NUMERIC_ATTRIBUTES = new HashSet<String>(
+			Arrays.asList(new String[] { CLINICAL_PRETTY_ATTRIBUTE_WEIGHT,
+					CLINICAL_PRETTY_ATTRIBUTE_BASELINE_CD4,
+					CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_CD4,
+					CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_VL,
+					CLINICAL_PRETTY_ATTRIBUTE_TIME_ON_FAILING_REGIMEN,
+					CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_CC,
+					CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_ALT,
+					CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_HB }));
 
-    // Categorical Attributes
-    public static Map<String, String[]> CLINICAL_CATEGORITCAL_ATTRIBUTES = new HashMap<String, String[]>();
+	// Categorical Attributes
+	public static Map<String, String[]> CLINICAL_CATEGORITCAL_ATTRIBUTES = new HashMap<String, String[]>();
 
-    // Pretty to Rega name map
-    public static Map<String, String> CLINICAL_ATTRIBUTES_REGA_MAP = new HashMap<String, String>();
+	// Pretty to Rega name map
+	public static Map<String, String> CLINICAL_ATTRIBUTES_REGA_MAP = new HashMap<String, String>();
 
-    static {
-        CLINICAL_CATEGORITCAL_ATTRIBUTES.put(CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_IMMUNO_FAILURE, new String[] {
-                "Yes", "No" });
-        CLINICAL_CATEGORITCAL_ATTRIBUTES.put(CLINICAL_PRETTY_ATTRIBUTE_TRANSMISSION_GROUP, new String[] {
-                "homosexual + IVDU", "haemophiliac", "occupational exposure", "unknown", "heterosexual", "vertical",
-                "bisexual + IVDU", "homosexual", "IVDU", "heterosexual + IVDU", "bisexual", "other", "transfusion" });
-        CLINICAL_CATEGORITCAL_ATTRIBUTES.put(CLINICAL_PRETTY_ATTRIBUTE_HTLV1_STATUS, new String[] { "positive",
-                "negative" });
-        CLINICAL_CATEGORITCAL_ATTRIBUTES.put(CLINICAL_PRETTY_ATTRIBUTE_HBV_STATUS, new String[] { "Not tested", "Neg",
-                "Pos" });
-        CLINICAL_CATEGORITCAL_ATTRIBUTES.put(CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_PRIOR, new String[] { "Regimen 1",
-                "Regimen 2", "MDR" });
-        CLINICAL_CATEGORITCAL_ATTRIBUTES.put(CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_DURING, new String[] { "Regimen 1",
-                "Regimen 2", "MDR" });
-        CLINICAL_CATEGORITCAL_ATTRIBUTES.put(CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_POST, new String[] { "Regimen 1",
-                "Regimen 2", "MDR" });
-        CLINICAL_CATEGORITCAL_ATTRIBUTES.put(CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_1, new String[] { "Yes", "No" });
-        CLINICAL_CATEGORITCAL_ATTRIBUTES.put(CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_2, new String[] { "Yes", "No" });
-        CLINICAL_CATEGORITCAL_ATTRIBUTES.put(CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_3, new String[] { "Yes", "No" });
+	static {
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_IMMUNO_FAILURE,
+				new String[] { "dummy", "Yes", "No" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_TRANSMISSION_GROUP, new String[] {
+						"dummy", "homosexual + IVDU", "haemophiliac",
+						"occupational exposure", "unknown", "heterosexual",
+						"vertical", "bisexual + IVDU", "homosexual", "IVDU",
+						"heterosexual + IVDU", "bisexual", "other",
+						"transfusion" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_HTLV1_STATUS, new String[] { "dummy",
+						"positive", "negative" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_HBV_STATUS, new String[] { "dummy",
+						"Not tested", "Neg", "Pos" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_PRIOR, new String[] {
+						"dummy", "Regimen 1", "Regimen 2", "MDR" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_DURING, new String[] {
+						"dummy", "Regimen 1", "Regimen 2", "MDR" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_POST, new String[] {
+						"dummy", "Regimen 1", "Regimen 2", "MDR" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_1, new String[] { "dummy",
+						"Yes", "No" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_2, new String[] { "dummy",
+						"Yes", "No" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_3, new String[] { "dummy",
+						"Yes", "No" });
 
-        CLINICAL_ATTRIBUTES_REGA_MAP.put(CLINICAL_PRETTY_ATTRIBUTE_WEIGHT, CLINICAL_REGA_ATTRIBUTE_WEIGHT);
-        CLINICAL_ATTRIBUTES_REGA_MAP.put(CLINICAL_PRETTY_ATTRIBUTE_TRANSMISSION_GROUP,
-                CLINICAL_REGA_ATTRIBUTE_TRANSMISSION_GROUP);
-        CLINICAL_ATTRIBUTES_REGA_MAP.put(CLINICAL_PRETTY_ATTRIBUTE_HTLV1_STATUS, CLINICAL_REGA_ATTRIBUTE_HTLV1_STATUS);
-        CLINICAL_ATTRIBUTES_REGA_MAP.put(CLINICAL_PRETTY_ATTRIBUTE_HBV_STATUS, CLINICAL_REGA_ATTRIBUTE_HBV_STATUS);
-        CLINICAL_ATTRIBUTES_REGA_MAP.put(CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_PRIOR,
-                CLINICAL_REGA_ATTRIBUTE_TB_THERAPY_PRIOR);
-        CLINICAL_ATTRIBUTES_REGA_MAP.put(CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_DURING,
-                CLINICAL_REGA_ATTRIBUTE_TB_THERAPY_DURING);
-        CLINICAL_ATTRIBUTES_REGA_MAP.put(CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_POST,
-                CLINICAL_REGA_ATTRIBUTE_TB_THERAPY_POST);
-        CLINICAL_ATTRIBUTES_REGA_MAP.put(CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_ALT,
-                CLINICAL_REGA_ATTRIBUTE_RECENT_BLOOD_ALT);
+		CLINICAL_ATTRIBUTES_REGA_MAP.put(CLINICAL_PRETTY_ATTRIBUTE_WEIGHT,
+				CLINICAL_REGA_ATTRIBUTE_WEIGHT);
+		CLINICAL_ATTRIBUTES_REGA_MAP.put(
+				CLINICAL_PRETTY_ATTRIBUTE_TRANSMISSION_GROUP,
+				CLINICAL_REGA_ATTRIBUTE_TRANSMISSION_GROUP);
+		CLINICAL_ATTRIBUTES_REGA_MAP.put(
+				CLINICAL_PRETTY_ATTRIBUTE_HTLV1_STATUS,
+				CLINICAL_REGA_ATTRIBUTE_HTLV1_STATUS);
+		CLINICAL_ATTRIBUTES_REGA_MAP.put(CLINICAL_PRETTY_ATTRIBUTE_HBV_STATUS,
+				CLINICAL_REGA_ATTRIBUTE_HBV_STATUS);
+		CLINICAL_ATTRIBUTES_REGA_MAP.put(
+				CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_PRIOR,
+				CLINICAL_REGA_ATTRIBUTE_TB_THERAPY_PRIOR);
+		CLINICAL_ATTRIBUTES_REGA_MAP.put(
+				CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_DURING,
+				CLINICAL_REGA_ATTRIBUTE_TB_THERAPY_DURING);
+		CLINICAL_ATTRIBUTES_REGA_MAP.put(
+				CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_POST,
+				CLINICAL_REGA_ATTRIBUTE_TB_THERAPY_POST);
+		CLINICAL_ATTRIBUTES_REGA_MAP.put(
+				CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_ALT,
+				CLINICAL_REGA_ATTRIBUTE_RECENT_BLOOD_ALT);
 
-    }
+	}
 
-    // Get a list of the clinical attributes
-    public static List<Attribute> getClinicalAttributes() {
-        ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+	// Get a list of the clinical attributes
+	public static List<Attribute> getClinicalAttributes() {
+		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 
-        // Numeric Attributes
-        for (String name : CLINICAL_NUMERIC_ATTRIBUTES) {
-            attributes.add(new Attribute(name));
-        }
+		// Numeric Attributes
+		for (String name : CLINICAL_NUMERIC_ATTRIBUTES) {
+			attributes.add(new Attribute(name));
+		}
 
-        // Categorical Attributes
-        for (String name : CLINICAL_CATEGORITCAL_ATTRIBUTES.keySet()) {
-            attributes.add(new Attribute(name, Arrays.asList(CLINICAL_CATEGORITCAL_ATTRIBUTES.get(name))));
-        }
+		// Categorical Attributes
+		for (String name : CLINICAL_CATEGORITCAL_ATTRIBUTES.keySet()) {
+			attributes.add(new Attribute(name, Arrays
+					.asList(CLINICAL_CATEGORITCAL_ATTRIBUTES.get(name))));
+		}
 
-        return attributes;
-    }
+		return attributes;
+	}
 
-    // Get a list of the clinical attribute names
-    public static List<String> getClinicalAttributeNames() {
-        ArrayList<String> attributes = new ArrayList<String>();
+	// Get a list of the clinical attribute names
+	public static List<String> getClinicalAttributeNames() {
+		ArrayList<String> attributes = new ArrayList<String>();
 
-        // Numeric Attributes
-        for (String name : CLINICAL_NUMERIC_ATTRIBUTES) {
-            attributes.add(name);
-        }
+		// Numeric Attributes
+		for (String name : CLINICAL_NUMERIC_ATTRIBUTES) {
+			attributes.add(name);
+		}
 
-        // Categorical Attributes
-        for (String name : CLINICAL_CATEGORITCAL_ATTRIBUTES.keySet()) {
-            attributes.add(name);
-        }
+		// Categorical Attributes
+		for (String name : CLINICAL_CATEGORITCAL_ATTRIBUTES.keySet()) {
+			attributes.add(name);
+		}
 
-        return attributes;
-    }
+		return attributes;
+	}
 
-    // Create attributes for the given list of attribute names
-    public static List<Attribute> createAttributes(String[] selectedClinicalAttributes, RuleService ruleService) {
-        ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+	// Create attributes for the given list of attribute names
+	public static List<Attribute> createAttributes(
+			String[] selectedClinicalAttributes, RuleService ruleService) {
+		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 
-        for (String attributeName : selectedClinicalAttributes) {
+		for (String attributeName : selectedClinicalAttributes) {
 
-            if (CLINICAL_NUMERIC_ATTRIBUTES.contains(attributeName)) {
-                // Numeric Attributes
-                attributes.add(new Attribute(attributeName));
+			if (CLINICAL_NUMERIC_ATTRIBUTES.contains(attributeName)) {
+				// Numeric Attributes
+				attributes.add(new Attribute(attributeName));
 
-                // Simple Numeric Attributes
-                if (CLINICAL_ATTRIBUTES_REGA_MAP.containsKey(attributeName)) {
-                    // Do nothing if it's a simple numeric attribute
-                } else {
-                    // Calculated Numeric Attributes
+				// Simple Numeric Attributes
+				if (CLINICAL_ATTRIBUTES_REGA_MAP.containsKey(attributeName)) {
+					// Do nothing if it's a simple numeric attribute
+				} else {
+					// Calculated Numeric Attributes
 
-                    if (attributeName.equals(CLINICAL_PRETTY_ATTRIBUTE_BASELINE_CD4)) {
-                        // Baseline CD4
-                        ruleService.addRule(BaselineCD4RuleImpl.class, new BaselineCD4RuleImpl(ruleService));
-                    } else if (attributeName.equals(CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_CD4)) {
-                        // Pre-Resistance CD4 Count
-                        ruleService.addRule(PreResistanceTestingCD4RuleImpl.class, new PreResistanceTestingCD4RuleImpl(
-                                ruleService));
-                    } else if (attributeName.equals(CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_VL)) {
-                        // Pre-Restiance Viral Load
-                        ruleService.addRule(PreResistanceTestingViralLoadRuleImpl.class,
-                                new PreResistanceTestingViralLoadRuleImpl(ruleService));
-                    } else if (attributeName.equals(CLINICAL_PRETTY_ATTRIBUTE_TIME_ON_FAILING_REGIMEN)) {
-                        // Time on failing regimen
-                        ruleService.addRule(TimeOnFailingRegimenRuleImpl.class, new TimeOnFailingRegimenRuleImpl(
-                                ruleService));
-                    } else if (attributeName.equals(CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_CC)) {
-                        // Recent Blood Creatinine Clearance
-                        ruleService.addRule(RecentBloodCCRuleImpl.class, new RecentBloodCCRuleImpl(ruleService));
-                    } else if (attributeName.equals(CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_HB)) {
-                        // Recent Blood HB
-                        ruleService.addRule(RecentBloodHBRuleImpl.class, new RecentBloodHBRuleImpl(ruleService));
-                    }
-                }
+					if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_BASELINE_CD4)) {
+						// Baseline CD4
+						ruleService.addRule(BaselineCD4RuleImpl.class,
+								new BaselineCD4RuleImpl(ruleService));
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_CD4)) {
+						// Pre-Resistance CD4 Count
+						ruleService
+								.addRule(PreResistanceTestingCD4RuleImpl.class,
+										new PreResistanceTestingCD4RuleImpl(
+												ruleService));
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_VL)) {
+						// Pre-Restiance Viral Load
+						ruleService.addRule(
+								PreResistanceTestingViralLoadRuleImpl.class,
+								new PreResistanceTestingViralLoadRuleImpl(
+										ruleService));
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_TIME_ON_FAILING_REGIMEN)) {
+						// Time on failing regimen
+						ruleService.addRule(TimeOnFailingRegimenRuleImpl.class,
+								new TimeOnFailingRegimenRuleImpl(ruleService));
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_CC)) {
+						// Recent Blood Creatinine Clearance
+						ruleService.addRule(RecentBloodCCRuleImpl.class,
+								new RecentBloodCCRuleImpl(ruleService));
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_HB)) {
+						// Recent Blood HB
+						ruleService.addRule(RecentBloodHBRuleImpl.class,
+								new RecentBloodHBRuleImpl(ruleService));
+					}
+				}
 
-            } else if (CLINICAL_CATEGORITCAL_ATTRIBUTES.containsKey(attributeName)) {
-                // Categorical Attributes
-                attributes.add(new Attribute(attributeName, Arrays.asList(CLINICAL_CATEGORITCAL_ATTRIBUTES
-                        .get(attributeName))));
+			} else if (CLINICAL_CATEGORITCAL_ATTRIBUTES
+					.containsKey(attributeName)) {
+				// Categorical Attributes
+				attributes.add(new Attribute(attributeName, Arrays
+						.asList(CLINICAL_CATEGORITCAL_ATTRIBUTES
+								.get(attributeName))));
 
-                if (CLINICAL_ATTRIBUTES_REGA_MAP.containsKey(attributeName)) {
-                    // Do nothing if it's a simple categorical attribute
-                } else {
-                    // Calculated Categorical Attributes
+				if (CLINICAL_ATTRIBUTES_REGA_MAP.containsKey(attributeName)) {
+					// Do nothing if it's a simple categorical attribute
+				} else {
+					// Calculated Categorical Attributes
 
-                    if (attributeName.equals(CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_IMMUNO_FAILURE)) {
-                        // Pre-Resistance Immunological Failure
-                        ruleService.addRule(PreResistanceImmunoFailure.class, new PreResistanceImmunoFailure(
-                                ruleService));
-                    } else if (attributeName.equals(CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_PRIOR)) {
-                        // Prior TB Therapy
-                        // ruleService.addRule(BaselineCD4RuleImpl.class, new
-                        // BaselineCD4RuleImpl());
-                    } else if (attributeName.equals(CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_DURING)) {
-                        // During TB Therapy
-                        // ruleService.addRule(BaselineCD4RuleImpl.class, new
-                        // BaselineCD4RuleImpl());
-                    } else if (attributeName.equals(CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_POST)) {
-                        // Post TB Therapy
-                        // ruleService.addRule(BaselineCD4RuleImpl.class, new
-                        // BaselineCD4RuleImpl());
-                    } else if (attributeName.equals(CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_1)) {
-                        // Other Drug 1
-                        // ruleService.addRule(BaselineCD4RuleImpl.class, new
-                        // BaselineCD4RuleImpl());
-                    } else if (attributeName.equals(CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_2)) {
-                        // Other Drug 2
-                        // ruleService.addRule(BaselineCD4RuleImpl.class, new
-                        // BaselineCD4RuleImpl());
-                    } else if (attributeName.equals(CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_3)) {
-                        // Other Drug 3
-                        // ruleService.addRule(BaselineCD4RuleImpl.class, new
-                        // BaselineCD4RuleImpl());
-                    }
-                }
-            }
-        }
+					if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_IMMUNO_FAILURE)) {
+						// Pre-Resistance Immunological Failure
+						ruleService.addRule(PreResistanceImmunoFailure.class,
+								new PreResistanceImmunoFailure(ruleService));
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_1)) {
+						// Other Drug 1
+						ruleService.addRule(OtherDrugRuleImpl.class,
+								new OtherDrugRuleImpl(ruleService));
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_2)) {
+						// Other Drug 2
+						ruleService.addRule(OtherDrugRuleImpl.class,
+								new OtherDrugRuleImpl(ruleService));
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_3)) {
+						// Other Drug 3
+						ruleService.addRule(OtherDrugRuleImpl.class,
+								new OtherDrugRuleImpl(ruleService));
+					}
+				}
+			}
+		}
 
-        return attributes;
-    }
+		return attributes;
+	}
 
-    // Add the value to the instance for the given attribute and patient
-    public static Instance addAttributeValue(Attribute attribute, Instance instance, Patient patient, RegaService rs) {
+	// Add the value to the instance for the given attribute and patient
+	public static Instance addAttributeValue(Attribute attribute,
+			Instance instance, Patient patient, RegaService rs) {
 
-        if (CLINICAL_NUMERIC_ATTRIBUTES.contains(attribute.name())) {
-            // Numeric Attributes
+		if (CLINICAL_NUMERIC_ATTRIBUTES.contains(attribute.name())) {
+			// Numeric Attributes
 
-            // Simple Numeric Attributes
-            if (CLINICAL_ATTRIBUTES_REGA_MAP.containsKey(attribute.name())) {
-                AttributeFactory.setSimpleNumericAttributeValue(attribute,
-                        CLINICAL_ATTRIBUTES_REGA_MAP.get(attribute.name()), instance, patient, rs);
-            } else {
-                // Calculated Numeric Attributes
+			// Simple Numeric Attributes
+			if (CLINICAL_ATTRIBUTES_REGA_MAP.containsKey(attribute.name())) {
+				AttributeFactory.setSimpleNumericAttributeValue(attribute,
+						CLINICAL_ATTRIBUTES_REGA_MAP.get(attribute.name()),
+						instance, patient, rs);
+			} else {
+				// Calculated Numeric Attributes
 
-                if (attribute.name().equals(CLINICAL_PRETTY_ATTRIBUTE_BASELINE_CD4)) {
-                    // Baseline CD4
-                    setAttributeValueBaselineCD4(attribute, instance, patient, rs);
-                } else if (attribute.name().equals(CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_CD4)) {
-                    // Pre-Resistance CD4 Count
-                    setAttributeValuePreResistanceCD4(attribute, instance, patient, rs);
-                } else if (attribute.name().equals(CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_VL)) {
-                    // Pre-Restiance Viral Load
-                    setAttributeValuePreResistanceViralLoad(attribute, instance, patient, rs);
-                } else if (attribute.name().equals(CLINICAL_PRETTY_ATTRIBUTE_TIME_ON_FAILING_REGIMEN)) {
-                    // Time on failing regiment
-                    setAttributeValueTimeOnFailingRegimen(attribute, instance, patient, rs);
-                } else if (attribute.name().equals(CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_CC)) {
-                    // Recent Blood Creatinine Clearance
-                    setAttributeValueRecentBloodCC(attribute, instance, patient, rs);
-                } else if (attribute.name().equals(CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_HB)) {
-                    // Recent Blood HB
-                    setAttributeValueRecentBloodHB(attribute, instance, patient, rs);
-                }
-            }
+				if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_BASELINE_CD4)) {
+					// Baseline CD4
+					setAttributeValueBaselineCD4(attribute, instance, patient,
+							rs);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_CD4)) {
+					// Pre-Resistance CD4 Count
+					setAttributeValuePreResistanceCD4(attribute, instance,
+							patient, rs);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_VL)) {
+					// Pre-Restiance Viral Load
+					setAttributeValuePreResistanceViralLoad(attribute,
+							instance, patient, rs);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_TIME_ON_FAILING_REGIMEN)) {
+					// Time on failing regiment
+					setAttributeValueTimeOnFailingRegimen(attribute, instance,
+							patient, rs);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_CC)) {
+					// Recent Blood Creatinine Clearance
+					setAttributeValueRecentBloodCC(attribute, instance,
+							patient, rs);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_HB)) {
+					// Recent Blood HB
+					setAttributeValueRecentBloodHB(attribute, instance,
+							patient, rs);
+				}
+			}
 
-            return instance;
+			return instance;
 
-        } else if (CLINICAL_CATEGORITCAL_ATTRIBUTES.containsKey(attribute.name())) {
-            // Categorical Attributes
+		} else if (CLINICAL_CATEGORITCAL_ATTRIBUTES.containsKey(attribute
+				.name())) {
+			// Categorical Attributes
 
-            // Simple Categorical Attributes
-            if (CLINICAL_ATTRIBUTES_REGA_MAP.containsKey(attribute.name())) {
-                AttributeFactory.setSimpleCategoricalAttributeValue(attribute,
-                        CLINICAL_ATTRIBUTES_REGA_MAP.get(attribute.name()), instance, patient, rs);
-            } else {
-                // Calculated Categorical Attributes
+			// Simple Categorical Attributes
+			if (CLINICAL_ATTRIBUTES_REGA_MAP.containsKey(attribute.name())) {
+				AttributeFactory.setSimpleCategoricalAttributeValue(attribute,
+						CLINICAL_ATTRIBUTES_REGA_MAP.get(attribute.name()),
+						instance, patient, rs);
+			} else {
+				// Calculated Categorical Attributes
 
-                if (attribute.name().equals(CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_IMMUNO_FAILURE)) {
-                    // Pre-Resistance Immunological Failure
-                    setAttributeValuePreResistanceImmunoFailure(attribute, instance, patient, rs);
-                } else if (attribute.name().equals(CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_PRIOR)) {
-                    // Prior TB Therapy
-                    setAttributeValueTBTherapy(attribute, "Prior", instance, patient, rs);
-                } else if (attribute.name().equals(CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_DURING)) {
-                    // During TB Therapy
-                    setAttributeValueTBTherapy(attribute, "During", instance, patient, rs);
-                } else if (attribute.name().equals(CLINICAL_PRETTY_ATTRIBUTE_TB_THERAPY_POST)) {
-                    // Post TB Therapy
-                    setAttributeValueTBTherapy(attribute, "Post", instance, patient, rs);
-                } else if (attribute.name().equals(CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_1)) {
-                    // Other Drug 1
-                    setAttributeValueTBTherapy(attribute, "1", instance, patient, rs);
-                } else if (attribute.name().equals(CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_2)) {
-                    // Other Drug 2
-                    setAttributeValueTBTherapy(attribute, "2", instance, patient, rs);
-                } else if (attribute.name().equals(CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_3)) {
-                    // Other Drug 3
-                    setAttributeValueTBTherapy(attribute, "3", instance, patient, rs);
-                }
-            }
+				if (attribute
+						.name()
+						.equals(CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_IMMUNO_FAILURE)) {
+					// Pre-Resistance Immunological Failure
+					setAttributeValuePreResistanceImmunoFailure(attribute,
+							instance, patient, rs);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_1)) {
+					// Other Drug 1
+					setAttributeValueOtherDrug(attribute, instance, patient, rs);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_2)) {
+					// Other Drug 2
+					setAttributeValueOtherDrug(attribute, instance, patient, rs);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_3)) {
+					// Other Drug 3
+					setAttributeValueOtherDrug(attribute, instance, patient, rs);
+				}
+			}
 
-            return instance;
-        }
+			return instance;
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    /**
-     * Attribute specific methods to find values from patient
-     */
+	/**
+	 * Attribute specific methods to find values from patient
+	 */
 
-    private static void setAttributeValuePreResistanceImmunoFailure(Attribute attribute, Instance instance,
-            Patient patient, RegaService rs) {
-        Rule prtImmunoFailure = rs.getRuleService().getRule(PreResistanceImmunoFailure.class);
+	private static void setAttributeValuePreResistanceImmunoFailure(
+			Attribute attribute, Instance instance, Patient patient,
+			RegaService rs) {
+		Rule prtImmunoFailure = rs.getRuleService().getRule(
+				PreResistanceImmunoFailure.class);
 
-        prtImmunoFailure.setAttributeValue(attribute, instance, patient);    }
+		prtImmunoFailure.setAttributeValue(attribute, instance, patient);
+	}
 
-    private static void setAttributeValueRecentBloodHB(Attribute attribute, Instance instance, Patient patient,
-            RegaService rs) {
-        Rule recentBloodHBRule = rs.getRuleService().getRule(RecentBloodHBRuleImpl.class);
+	private static void setAttributeValueRecentBloodHB(Attribute attribute,
+			Instance instance, Patient patient, RegaService rs) {
+		Rule recentBloodHBRule = rs.getRuleService().getRule(
+				RecentBloodHBRuleImpl.class);
 
-        recentBloodHBRule.setAttributeValue(attribute, instance, patient);
-    }
+		recentBloodHBRule.setAttributeValue(attribute, instance, patient);
+	}
 
-    private static void setAttributeValueRecentBloodCC(Attribute attribute, Instance instance, Patient patient,
-            RegaService rs) {
-        Rule recentBloodCCRule = rs.getRuleService().getRule(RecentBloodCCRuleImpl.class);
+	private static void setAttributeValueRecentBloodCC(Attribute attribute,
+			Instance instance, Patient patient, RegaService rs) {
+		Rule recentBloodCCRule = rs.getRuleService().getRule(
+				RecentBloodCCRuleImpl.class);
 
-        recentBloodCCRule.setAttributeValue(attribute, instance, patient);
-    }
+		recentBloodCCRule.setAttributeValue(attribute, instance, patient);
+	}
 
-    // Determine Time On Failing Regimen
-    private static void setAttributeValueTimeOnFailingRegimen(Attribute attribute, Instance instance, Patient patient,
-            RegaService rs) {
-        Rule timeOnFailingRegimenRule = rs.getRuleService().getRule(TimeOnFailingRegimenRuleImpl.class);
+	// Determine Time On Failing Regimen
+	private static void setAttributeValueTimeOnFailingRegimen(
+			Attribute attribute, Instance instance, Patient patient,
+			RegaService rs) {
+		Rule timeOnFailingRegimenRule = rs.getRuleService().getRule(
+				TimeOnFailingRegimenRuleImpl.class);
 
-        timeOnFailingRegimenRule.setAttributeValue(attribute, instance, patient);
-    }
+		timeOnFailingRegimenRule
+				.setAttributeValue(attribute, instance, patient);
+	}
 
-    // Determine Pre-Resistance Viral Load Value
-    private static void setAttributeValuePreResistanceViralLoad(Attribute attribute, Instance instance,
-            Patient patient, RegaService rs) {
-        Rule preResistanceTestViralLoadRule = rs.getRuleService().getRule(PreResistanceTestingViralLoadRuleImpl.class);
+	// Determine Pre-Resistance Viral Load Value
+	private static void setAttributeValuePreResistanceViralLoad(
+			Attribute attribute, Instance instance, Patient patient,
+			RegaService rs) {
+		Rule preResistanceTestViralLoadRule = rs.getRuleService().getRule(
+				PreResistanceTestingViralLoadRuleImpl.class);
 
-        preResistanceTestViralLoadRule.setAttributeValue(attribute, instance, patient);
-    }
+		preResistanceTestViralLoadRule.setAttributeValue(attribute, instance,
+				patient);
+	}
 
-    // Determine Baseline CD4 Value
-    public static void setAttributeValueBaselineCD4(Attribute attribute, Instance instance, Patient patient,
-            RegaService rs) {
-        Rule baselineCD4Rule = rs.getRuleService().getRule(BaselineCD4RuleImpl.class);
+	// Determine Baseline CD4 Value
+	public static void setAttributeValueBaselineCD4(Attribute attribute,
+			Instance instance, Patient patient, RegaService rs) {
+		Rule baselineCD4Rule = rs.getRuleService().getRule(
+				BaselineCD4RuleImpl.class);
 
-        baselineCD4Rule.setAttributeValue(attribute, instance, patient);
+		baselineCD4Rule.setAttributeValue(attribute, instance, patient);
 
-        // instance.setValue(attribute, Double.parseDouble(value);
-    }
+		// instance.setValue(attribute, Double.parseDouble(value);
+	}
 
-    // Determine Pre-Resistance Testing CD4 Count Value
-    public static void setAttributeValuePreResistanceCD4(Attribute attribute, Instance instance, Patient patient,
-            RegaService rs) {
-        Rule preResistanceTestCD4Rule = rs.getRuleService().getRule(PreResistanceTestingCD4RuleImpl.class);
+	// Determine Pre-Resistance Testing CD4 Count Value
+	public static void setAttributeValuePreResistanceCD4(Attribute attribute,
+			Instance instance, Patient patient, RegaService rs) {
+		Rule preResistanceTestCD4Rule = rs.getRuleService().getRule(
+				PreResistanceTestingCD4RuleImpl.class);
 
-        preResistanceTestCD4Rule.setAttributeValue(attribute, instance, patient);
-    }
+		preResistanceTestCD4Rule
+				.setAttributeValue(attribute, instance, patient);
+	}
 
-    // Determine TB Therapy Value
-    public static void setAttributeValueTBTherapy(Attribute attribute, String time, Instance instance, Patient patient,
-            RegaService rs) {
-        // TODO Auto-generated method stub
-    }
+	// Determine Other Drug Value
+	public static void setAttributeValueOtherDrug(Attribute attribute,
+			Instance instance, Patient patient, RegaService rs) {
+		Rule otherDrugRule = rs.getRuleService().getRule(
+				OtherDrugRuleImpl.class);
 
-    // Determine Other Drug Value
-    public static void setAttributeValueOtherDrug(Attribute attribute, String number, Instance instance,
-            Patient patient, RegaService rs) {
-        // TODO Auto-generated method stub
-    }
+		otherDrugRule.setAttributeValue(attribute, instance, patient);
+	}
 }

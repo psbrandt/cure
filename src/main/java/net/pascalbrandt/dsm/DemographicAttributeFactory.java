@@ -48,22 +48,22 @@ public class DemographicAttributeFactory {
 
     static {
         DEMOGRAPHIC_CATEGORITCAL_ATTRIBUTES.put(DEMOGRAPHIC_PRETTY_ATTRIBUTE_GENDER, new String[] {
-                "male", "female" });
+                "dummy", "male", "female" });
         DEMOGRAPHIC_CATEGORITCAL_ATTRIBUTES.put(DEMOGRAPHIC_PRETTY_ATTRIBUTE_ETHNICITY,
-                new String[] { "african", "asian", "caucasian" });
+                new String[] { "dummy", "african", "asian", "caucasian" });
         DEMOGRAPHIC_CATEGORITCAL_ATTRIBUTES.put(DEMOGRAPHIC_PRETTY_ATTRIBUTE_PROVINCE,
-                new String[] { "Western Cape", "Gauteng", "North West", "Limpopo", "KwaZulu-Natal",
+                new String[] { "dummy", "Western Cape", "Gauteng", "North West", "Limpopo", "KwaZulu-Natal",
                         "Northern Cape", "Free State", "Eastern Cape", "Mapumalanga" });
         DEMOGRAPHIC_CATEGORITCAL_ATTRIBUTES.put(DEMOGRAPHIC_PRETTY_ATTRIBUTE_GEOGRAPHIC_ORIGIN,
                 new String[] {
 
-                "Caribbean", "Middle East", "Africa", "Polynesia", "Subsaharan Africa",
+                "dummy", "Caribbean", "Middle East", "Africa", "Polynesia", "Subsaharan Africa",
                         "Eastern Europe", "North Africa", "South America", "Asia",
                         "Central Africa", "North America", "Europe" });
 
         DEMOGRAPHIC_CATEGORITCAL_ATTRIBUTES.put(DEMOGRAPHIC_PRETTY_ATTRIBUTE_COUNTRY_OF_ORIGIN,
         // Used list
-                new String[] { "Botswana", "India", "Namibia", "South Africa", "Tanzania",
+                new String[] { "dummy", "Botswana", "India", "Namibia", "South Africa", "Tanzania",
                         "Zimbabwe" });
 
         /**

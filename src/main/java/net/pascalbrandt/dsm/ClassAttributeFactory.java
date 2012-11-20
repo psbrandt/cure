@@ -31,7 +31,7 @@ public class ClassAttributeFactory {
 
     // Classes
     public static final Set<String> CLASS_ATTRIBUTES = new HashSet<String>(
-            Arrays.asList(new String[] { CLASS_ATTRIBUTE_RESISTANT, CLASS_ATTRIBUTE_NOT_RESISTANT }));
+            Arrays.asList(new String[] { "dummy", CLASS_ATTRIBUTE_RESISTANT, CLASS_ATTRIBUTE_NOT_RESISTANT }));
 
     // Get the class attribute
     public static Attribute getClassAttribute() {

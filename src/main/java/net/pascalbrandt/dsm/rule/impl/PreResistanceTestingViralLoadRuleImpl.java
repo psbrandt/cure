@@ -49,8 +49,8 @@ public class PreResistanceTestingViralLoadRuleImpl extends Rule {
             if (currentPreResistanceVL == null) {
                 // We don't have a value yet
 
-                if ((tempDate.before(sequenceDate) && diffInDays <= PreResistanceTestingCD4RuleImpl.THIRTEEN_MONTHS_IN_DAYS)
-                        || (tempDate.after(sequenceDate) && diffInDays <= PreResistanceTestingCD4RuleImpl.FOUR_WEEKS_IN_DAYS)) {
+                if ((tempDate.before(sequenceDate) && diffInDays <= RegaService.THIRTEEN_MONTHS_IN_DAYS)
+                        || (tempDate.after(sequenceDate) && diffInDays <= RegaService.FOUR_WEEKS_IN_DAYS)) {
                     // The value is valid
                     currentPreResistanceVL = tempResult;
                     currentPreResistanceVLDate = tempDate;

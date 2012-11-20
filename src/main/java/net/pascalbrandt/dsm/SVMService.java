@@ -1,5 +1,7 @@
 package net.pascalbrandt.dsm;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,6 +72,19 @@ public class SVMService implements ApplicationContextAware {
        // saver.setInstances(trainingData);
         
         //saver.
+        
+        /*ArffSaver saver = new ArffSaver();
+        saver.setInstances(trainingData);
+        try {
+            saver.setFile(new File(System.getProperty("java.io.tmpdir") + "/rega.arff"));
+            saver.writeBatch();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            logger.error("Failed to create arff file");
+        }*/
+        //saver.setDestination(new File("./data/test.arff"));   // **not** necessary in 3.5.4 and later
+        
+        
         
         return trainingData.toString();
         
