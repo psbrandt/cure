@@ -322,6 +322,7 @@
 		    	<div class="btn-group">
 			    	<button type="submit" class="btn btn-primary" name="submitButton" value="Classify">Classify</button>
 			    	<button type="submit" class="btn btn-primary" name="submitButton" value="ARFF">Generate ARFF File</button>
+			    	<button type="submit" class="btn btn-primary" name="submitButton" value="Excel">Generate Excel File</button>
 		    	</div>
 		    </div>
 		  </fieldset>

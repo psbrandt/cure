@@ -147,21 +147,29 @@ public class OtherAttributeFactory {
 		ArrayList<Attribute> attributes = new ArrayList<Attribute>();
 
 		for (String attributeName : selectedOtherAttributes) {
-			// Numeric Attributes
-			if (OTHER_NUMERIC_ATTRIBUTES.contains(attributeName)) {
-				attributes.add(new Attribute(attributeName));
-			}
 
-			// Categorical Attributes
-			if (OTHER_CATEGORITCAL_ATTRIBUTES.containsKey(attributeName)) {
+			if (OTHER_NUMERIC_ATTRIBUTES.contains(attributeName)) {
+				// Numeric Attributes
+				attributes.add(new Attribute(attributeName));
+			} else if (OTHER_CATEGORITCAL_ATTRIBUTES.containsKey(attributeName)) {
+				// Categorical Attributes
 				attributes.add(new Attribute(attributeName, Arrays
 						.asList(OTHER_CATEGORITCAL_ATTRIBUTES
 								.get(attributeName))));
-			} else if (attributeName
-					.equals(OTHER_PRETTY_ATTRIBUTE_OTHER_COMORBIDITIES)) {
-				// Other Comorbidities
-				ruleService.addRule(OtherComorbiditiesRuleImpl.class,
-						new OtherComorbiditiesRuleImpl(ruleService));
+
+				if (OTHER_ATTRIBUTES_REGA_MAP.containsKey(attributeName)) {
+					// Do nothing if it's a simple categorical attribute
+				} else {
+					// Calculated Categorical Attributes
+					if (attributeName
+							.equals(OTHER_PRETTY_ATTRIBUTE_OTHER_COMORBIDITIES)) {
+						// Other Comorbidities
+						ruleService.addRule(OtherComorbiditiesRuleImpl.class,
+								new OtherComorbiditiesRuleImpl(ruleService));
+
+						logger.info("### Creating Other Co-mordbities rule!!");
+					}
+				}
 			}
 		}
 

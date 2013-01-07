@@ -51,6 +51,8 @@ public class RegaService implements ApplicationContextAware {
 
     public static final String AC_FAILURE_CLINIC_DATASET_DESCRIPTOR = "AC_Failure Management Clinic";
 
+    public static final double ONE_YEAR_IN_DAYS = 365;
+    public static final double SIX_MONTHS_IN_DAYS = 180;
     public static final double SEVEN_MONTHS_IN_DAYS = 210;
     public static final double TWO_WEEKS_IN_DAYS = 14;
     public static final double THIRTEEN_MONTHS_IN_DAYS = 390;
@@ -425,4 +427,42 @@ public class RegaService implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         context = applicationContext;
     }
+
+    /*
+     * Return all CD4 counts up to 6 months before the sequence date.
+     * 
+     * If there is no sequence data, the sequence date is taken to be
+     * the date of the most recent CD4 count
+     */
+	public List<TestResult> getRecentCD4Counts(Patient patient) {
+		List<TestResult> CD4Results = getListOfTestResultsSortedByDate(RegaService.CD4_COUNT_TEST_ID,
+                patient.getPatientIi(), RegaService.SORT_ORDER_DESC);
+		
+		
+        if (CD4Results.size() < 2)
+            return null; // We have too few CD4 counts
+        
+		Date endDate = getFirstSequenceDate(patient);
+		
+		if (endDate == null) {
+			endDate = CD4Results.get(0).getTestDate();
+		}
+		
+		// Get rid of any results not in the last 6 months
+		List<TestResult> results = new ArrayList<TestResult>();
+		for (TestResult ts : CD4Results) {
+			Date resultDate = ts.getTestDate();
+			
+			long diffInDays = Math.abs((endDate.getTime() - resultDate.getTime())) / (1000 * 60 * 60 * 24);
+			
+			if(diffInDays <= ONE_YEAR_IN_DAYS)
+				results.add(ts); // Only include the latest results
+		}
+		
+		// Make sure we still have enough results
+        if (CD4Results.size() < 2)
+            return null; 
+
+        return results;
+	}
 }

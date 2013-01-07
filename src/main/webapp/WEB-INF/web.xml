@@ -30,5 +30,27 @@
 		<servlet-name>appServlet</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ARFFServlet</servlet-name>
+		<servlet-class>net.pascalbrandt.dsm.web.ARFFServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>ARFFServlet</servlet-name>
+		<url-pattern>/arff</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ExcelServlet</servlet-name>
+		<servlet-class>net.pascalbrandt.dsm.web.ExcelServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>ExcelServlet</servlet-name>
+		<url-pattern>/excel</url-pattern>
+	</servlet-mapping>
 
 </web-app>

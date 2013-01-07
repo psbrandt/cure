@@ -1,17 +1,19 @@
 package net.pascalbrandt.dsm.web.controller;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.pascalbrandt.dsm.AttributeFactory;
+import net.pascalbrandt.dsm.RegaService;
 import net.pascalbrandt.dsm.SVMService;
 import net.pascalbrandt.dsm.web.fbo.SVMConfigurationForm;
-import net.sf.regadb.util.date.DateUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,10 +55,11 @@ public class SVMController implements ApplicationContextAware {
     }
 
     @RequestMapping(value = "**/classification", method = RequestMethod.POST, params = "submitButton=ARFF")
-    public String generateARFFFile(HttpServletResponse response, Model model,
+    public void generateARFFFile(HttpServletRequest request, HttpServletResponse response, Model model,
             @ModelAttribute("config") SVMConfigurationForm config) {
         logger.info("Generating ARFF File");
 
+        /*
         response.setContentType("text/plain");
         
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd_kk.mm.ss");
@@ -84,8 +87,33 @@ public class SVMController implements ApplicationContextAware {
         } catch (Exception e) {
             logger.info("Error generating ARFF File:" + e.getMessage());
         }
+        */
+        
+        request.getSession().setAttribute("config", config);
+        
+        try {
+			response.sendRedirect("/dsm/arff");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+       // return "home";
+    }
+    
+    @RequestMapping(value = "**/classification", method = RequestMethod.POST, params = "submitButton=Excel")
+    public void generateExcelFile(HttpServletRequest request, HttpServletResponse response, Model model,
+            @ModelAttribute("config") SVMConfigurationForm config) {
+        logger.info("Generating Excel File");
 
-        return "home";
+        request.getSession().setAttribute("config", config);
+        
+        try {
+			response.sendRedirect("/dsm/excel");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     @RequestMapping(value = "**/classification", method = RequestMethod.POST, params = "submitButton=Classify")

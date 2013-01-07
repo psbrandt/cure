@@ -16,6 +16,8 @@ import net.pascalbrandt.dsm.rule.impl.PreResistanceTestingCD4RuleImpl;
 import net.pascalbrandt.dsm.rule.impl.PreResistanceTestingViralLoadRuleImpl;
 import net.pascalbrandt.dsm.rule.impl.RecentBloodCCRuleImpl;
 import net.pascalbrandt.dsm.rule.impl.RecentBloodHBRuleImpl;
+import net.pascalbrandt.dsm.rule.impl.RecentCD4GradientRuleImpl;
+import net.pascalbrandt.dsm.rule.impl.RecentVLGradientRuleImpl;
 import net.pascalbrandt.dsm.rule.impl.TimeOnFailingRegimenRuleImpl;
 import net.sf.regadb.db.Patient;
 
@@ -38,6 +40,8 @@ public class ClinicalAttributeFactory {
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_CC = "Recent Blood Creatinine Clearance";
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_ALT = "Recent Blood ALT";
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_HB = "Recent Blood HB";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_CD4_GRADIENT = "Recent CD4 Count Gradient";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_VL_GRADIENT = "Recent Viral Load Gradient";
 
 	// Pretty Categorical Attribute Names
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_IMMUNO_FAILURE = "Pre-Resistance Testing Immunological Failure";
@@ -75,7 +79,9 @@ public class ClinicalAttributeFactory {
 					CLINICAL_PRETTY_ATTRIBUTE_TIME_ON_FAILING_REGIMEN,
 					CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_CC,
 					CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_ALT,
-					CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_HB }));
+					CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_HB,
+					CLINICAL_PRETTY_ATTRIBUTE_RECENT_CD4_GRADIENT,
+					CLINICAL_PRETTY_ATTRIBUTE_RECENT_VL_GRADIENT}));
 
 	// Categorical Attributes
 	public static Map<String, String[]> CLINICAL_CATEGORITCAL_ATTRIBUTES = new HashMap<String, String[]>();
@@ -230,6 +236,16 @@ public class ClinicalAttributeFactory {
 						// Recent Blood HB
 						ruleService.addRule(RecentBloodHBRuleImpl.class,
 								new RecentBloodHBRuleImpl(ruleService));
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_RECENT_CD4_GRADIENT)) {
+						// Recent CD4 Gradient
+						ruleService.addRule(RecentCD4GradientRuleImpl.class,
+								new RecentCD4GradientRuleImpl(ruleService));
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_RECENT_VL_GRADIENT)) {
+						// Recent VL Gradient
+						ruleService.addRule(RecentVLGradientRuleImpl.class,
+								new RecentVLGradientRuleImpl(ruleService));
 					}
 				}
 
@@ -318,6 +334,16 @@ public class ClinicalAttributeFactory {
 					// Recent Blood HB
 					setAttributeValueRecentBloodHB(attribute, instance,
 							patient, rs);
+				} else if (attribute.name()
+						.equals(CLINICAL_PRETTY_ATTRIBUTE_RECENT_CD4_GRADIENT)) {
+					// Recent CD4 Gradient
+					setAttributeValueRecentCD4Gradient(attribute, instance,
+							patient, rs);
+				} else if (attribute.name()
+						.equals(CLINICAL_PRETTY_ATTRIBUTE_RECENT_VL_GRADIENT)) {
+					// Recent VL Gradient
+					setAttributeValueRecentVLGradient(attribute, instance,
+							patient, rs);;
 				}
 			}
 
@@ -381,6 +407,22 @@ public class ClinicalAttributeFactory {
 				RecentBloodHBRuleImpl.class);
 
 		recentBloodHBRule.setAttributeValue(attribute, instance, patient);
+	}
+	
+	private static void setAttributeValueRecentCD4Gradient(Attribute attribute,
+			Instance instance, Patient patient, RegaService rs) {
+		Rule recentCD4GradientRule = rs.getRuleService().getRule(
+				RecentCD4GradientRuleImpl.class);
+
+		recentCD4GradientRule.setAttributeValue(attribute, instance, patient);
+	}
+	
+	private static void setAttributeValueRecentVLGradient(Attribute attribute,
+			Instance instance, Patient patient, RegaService rs) {
+		Rule recentBloodVLGradientRule = rs.getRuleService().getRule(
+				RecentVLGradientRuleImpl.class);
+
+		recentBloodVLGradientRule.setAttributeValue(attribute, instance, patient);
 	}
 
 	private static void setAttributeValueRecentBloodCC(Attribute attribute,
