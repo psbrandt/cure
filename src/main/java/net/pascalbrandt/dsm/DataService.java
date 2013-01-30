@@ -3,6 +3,7 @@ package net.pascalbrandt.dsm;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,8 +46,12 @@ public class DataService implements ApplicationContextAware {
 	public static Integer UNLABELLED_COUNT;
 
 	public static final String REGA_RESISTANCE_TEST = "REGA v8.0.1";
+	
 	public static final Integer REGA_RESISTANCE_TEST_ID1 = 51;
 	public static final Integer REGA_RESISTANCE_TEST_ID2 = 54;
+	
+	public static final String REGA_STANFORD_RESISTANCE_TEST = "HIVDB 6.0.5";
+	public static final Integer REGA_STANFORD_RESISTANCE_TEST_II = 57;
 
 	public static final Integer REGA_GSS_TEST_TYPE_ID1 = 45;
 	public static final Integer REGA_GSS_TEST_TYPE_ID2 = 46;
@@ -413,9 +418,18 @@ public class DataService implements ApplicationContextAware {
         }
         
         // Class
-        XSSFCell temp = headerRow.createCell(col++);
-    	temp.setCellStyle(headerStyle);
-    	temp.setCellValue("Resistance"); 
+        //XSSFCell temp = headerRow.createCell(col++);
+    	//temp.setCellStyle(headerStyle);
+    	//temp.setCellValue("Resistance"); 
+        
+        // Labels
+        HashSet<String> labels = ClassAttributeFactory.MULTI_LABEL_DRUG_RESISTANCE_LABELS;
+        for (String s : labels) {
+        	XSSFCell temp = headerRow.createCell(col++);
+        	temp.setCellStyle(headerStyle);
+        	temp.setCellValue(s); 
+        }
+        
         
 		// Step 3: Produce Data
         RegaService rs = context.getBean(RegaService.class);
@@ -470,6 +484,8 @@ public class DataService implements ApplicationContextAware {
             	if(attr.isNumeric()) {
             		Double d = instance.value(attr);
 
+            		logger.info("Value for [" + attr.name() + "] is [" + d + "]");
+            		
             			tempCell.setCellValue(d);      
             			
             			
@@ -547,8 +563,38 @@ public class DataService implements ApplicationContextAware {
             }
             
             // Class
-            XSSFCell tempCell = tempRow.createCell(col++);
-            tempCell.setCellValue(rs.classifyPatient(p));
+            //XSSFCell tempCell = tempRow.createCell(col++);
+            //tempCell.setCellValue(rs.classifyPatient(p));
+            
+            // Labels
+        	Instance labeldummyinstance = new SparseInstance(demographic.length + clinical.length + adherence.length + other.length + ClassAttributeFactory.MULTI_LABEL_DRUG_RESISTANCE_LABELS.size());
+
+            List<Attribute> labelAttributes = ClassAttributeFactory.getLabelAttributes();//OtherAttributeFactory.createAttributes(other, ruleService);
+            ArrayList<Attribute> labelAttributesAL = new ArrayList<Attribute>(labelAttributes);
+            Instances labelData = new Instances("dummy", labelAttributesAL, 300);
+            for(Attribute attr : labelAttributes) {
+            	XSSFCell tempCell = tempRow.createCell(col++);
+            	
+            	labelData.add(labeldummyinstance);
+            	
+            	ClassAttributeFactory.addAttributeValue(attr, labeldummyinstance, p, rs);
+            	if(attr.isNumeric()) {
+            		Double d = labeldummyinstance.value(attr);
+
+            			tempCell.setCellValue(d);      
+            			
+            			
+            		if(tempCell.getRawValue().equals("#NUM!"))
+            				tempCell.setCellValue("");
+            			
+            	} else {
+            		String val = labeldummyinstance.stringValue(labelData.attribute(attr.name()));
+            		
+            		if(!val.equals("dummy"))
+            			tempCell.setCellValue(val);
+            		
+            	}
+            }
             
         	row++;
         }

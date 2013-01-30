@@ -44,8 +44,11 @@ public class AttributeFactory {
                 .getSelectedOtherAttributes(), ruleService));
 
         // Class Attribute
-        attributes.add(ClassAttributeFactory.CLASS_ATTRIBUTE_INDEX,
-                ClassAttributeFactory.getClassAttribute());
+        //attributes.add(ClassAttributeFactory.CLASS_ATTRIBUTE_INDEX,
+        //        ClassAttributeFactory.getClassAttribute());
+        
+        // Labels
+        attributes.addAll(ClassAttributeFactory.getLabelAttributes());
 
         return attributes;
     }

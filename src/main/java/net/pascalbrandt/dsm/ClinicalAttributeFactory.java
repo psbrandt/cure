@@ -10,6 +10,8 @@ import java.util.Set;
 
 import net.pascalbrandt.dsm.rule.Rule;
 import net.pascalbrandt.dsm.rule.impl.BaselineCD4RuleImpl;
+import net.pascalbrandt.dsm.rule.impl.DrugExposureCountRuleImpl;
+import net.pascalbrandt.dsm.rule.impl.DrugExposureRuleImpl;
 import net.pascalbrandt.dsm.rule.impl.OtherDrugRuleImpl;
 import net.pascalbrandt.dsm.rule.impl.PreResistanceImmunoFailure;
 import net.pascalbrandt.dsm.rule.impl.PreResistanceTestingCD4RuleImpl;
@@ -42,6 +44,7 @@ public class ClinicalAttributeFactory {
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_HB = "Recent Blood HB";
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_CD4_GRADIENT = "Recent CD4 Count Gradient";
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_VL_GRADIENT = "Recent Viral Load Gradient";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_COUNT = "Drug Exposure Count";
 
 	// Pretty Categorical Attribute Names
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_IMMUNO_FAILURE = "Pre-Resistance Testing Immunological Failure";
@@ -54,6 +57,13 @@ public class ClinicalAttributeFactory {
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_1 = "Other Drug 1";
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_2 = "Other Drug 2";
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_3 = "Other Drug 3";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_1 = "Drug Exposure 1";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_2 = "Drug Exposure 2";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_3 = "Drug Exposure 3";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_4 = "Drug Exposure 4";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_5 = "Drug Exposure 5";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_6 = "Drug Exposure 6";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_7 = "Drug Exposure 7";
 
 	// Rega Attribute Names
 	public static final String CLINICAL_REGA_ATTRIBUTE_WEIGHT = "Weight";
@@ -80,8 +90,9 @@ public class ClinicalAttributeFactory {
 					CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_CC,
 					CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_ALT,
 					CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_HB,
-					CLINICAL_PRETTY_ATTRIBUTE_RECENT_CD4_GRADIENT,
-					CLINICAL_PRETTY_ATTRIBUTE_RECENT_VL_GRADIENT}));
+					//CLINICAL_PRETTY_ATTRIBUTE_RECENT_CD4_GRADIENT,
+					//CLINICAL_PRETTY_ATTRIBUTE_RECENT_VL_GRADIENT,
+					CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_COUNT }));
 
 	// Categorical Attributes
 	public static Map<String, String[]> CLINICAL_CATEGORITCAL_ATTRIBUTES = new HashMap<String, String[]>();
@@ -124,6 +135,48 @@ public class ClinicalAttributeFactory {
 		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
 				CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_3, new String[] { "dummy",
 						"Yes", "No" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_1, new String[] {
+						"dummy", "efavirenz", "stavudine", "lamivudine",
+						"lopinavir/r", "zidovudine", "tenofovir", "nevirapine",
+						"abacavir", "ritonavir", "raltegravir", "didanosine",
+						"atazanavir" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_2, new String[] {
+						"dummy", "efavirenz", "stavudine", "lamivudine",
+						"lopinavir/r", "zidovudine", "tenofovir", "nevirapine",
+						"abacavir", "ritonavir", "raltegravir", "didanosine",
+						"atazanavir" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_3, new String[] {
+						"dummy", "efavirenz", "stavudine", "lamivudine",
+						"lopinavir/r", "zidovudine", "tenofovir", "nevirapine",
+						"abacavir", "ritonavir", "raltegravir", "didanosine",
+						"atazanavir" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_4, new String[] {
+						"dummy", "efavirenz", "stavudine", "lamivudine",
+						"lopinavir/r", "zidovudine", "tenofovir", "nevirapine",
+						"abacavir", "ritonavir", "raltegravir", "didanosine",
+						"atazanavir" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_5, new String[] {
+						"dummy", "efavirenz", "stavudine", "lamivudine",
+						"lopinavir/r", "zidovudine", "tenofovir", "nevirapine",
+						"abacavir", "ritonavir", "raltegravir", "didanosine",
+						"atazanavir" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_6, new String[] {
+						"dummy", "efavirenz", "stavudine", "lamivudine",
+						"lopinavir/r", "zidovudine", "tenofovir", "nevirapine",
+						"abacavir", "ritonavir", "raltegravir", "didanosine",
+						"atazanavir" });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_7, new String[] {
+						"dummy", "efavirenz", "stavudine", "lamivudine",
+						"lopinavir/r", "zidovudine", "tenofovir", "nevirapine",
+						"abacavir", "ritonavir", "raltegravir", "didanosine",
+						"atazanavir" });
 
 		CLINICAL_ATTRIBUTES_REGA_MAP.put(CLINICAL_PRETTY_ATTRIBUTE_WEIGHT,
 				CLINICAL_REGA_ATTRIBUTE_WEIGHT);
@@ -246,6 +299,11 @@ public class ClinicalAttributeFactory {
 						// Recent VL Gradient
 						ruleService.addRule(RecentVLGradientRuleImpl.class,
 								new RecentVLGradientRuleImpl(ruleService));
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_COUNT)) {
+						// Drug Exposure Count
+						ruleService.addRule(DrugExposureCountRuleImpl.class,
+								new DrugExposureCountRuleImpl(ruleService));
 					}
 				}
 
@@ -281,7 +339,12 @@ public class ClinicalAttributeFactory {
 						// Other Drug 3
 						ruleService.addRule(OtherDrugRuleImpl.class,
 								new OtherDrugRuleImpl(ruleService));
-					}
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_1)) {
+						// Drug Exposure 1
+						ruleService.addRule(DrugExposureRuleImpl.class,
+								new DrugExposureRuleImpl(ruleService));
+					} 
 				}
 			}
 		}
@@ -334,16 +397,23 @@ public class ClinicalAttributeFactory {
 					// Recent Blood HB
 					setAttributeValueRecentBloodHB(attribute, instance,
 							patient, rs);
-				} else if (attribute.name()
-						.equals(CLINICAL_PRETTY_ATTRIBUTE_RECENT_CD4_GRADIENT)) {
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_RECENT_CD4_GRADIENT)) {
 					// Recent CD4 Gradient
 					setAttributeValueRecentCD4Gradient(attribute, instance,
 							patient, rs);
-				} else if (attribute.name()
-						.equals(CLINICAL_PRETTY_ATTRIBUTE_RECENT_VL_GRADIENT)) {
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_RECENT_VL_GRADIENT)) {
 					// Recent VL Gradient
 					setAttributeValueRecentVLGradient(attribute, instance,
-							patient, rs);;
+							patient, rs);
+					;
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_COUNT)) {
+					// Recent VL Gradient
+					setAttributeValueDrugExposureCount(attribute, instance,
+							patient, rs);
+					;
 				}
 			}
 
@@ -379,6 +449,41 @@ public class ClinicalAttributeFactory {
 						CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_3)) {
 					// Other Drug 3
 					setAttributeValueOtherDrug(attribute, instance, patient, rs);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_1)) {
+					// Drug Exposure 1
+					setAttributeValueDrugExposure(attribute, instance, patient,
+							rs, 1);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_2)) {
+					// Drug Exposure 1
+					setAttributeValueDrugExposure(attribute, instance, patient,
+							rs, 2);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_3)) {
+					// Drug Exposure 1
+					setAttributeValueDrugExposure(attribute, instance, patient,
+							rs, 3);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_4)) {
+					// Drug Exposure 1
+					setAttributeValueDrugExposure(attribute, instance, patient,
+							rs, 4);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_5)) {
+					// Drug Exposure 1
+					setAttributeValueDrugExposure(attribute, instance, patient,
+							rs, 5);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_6)) {
+					// Drug Exposure 1
+					setAttributeValueDrugExposure(attribute, instance, patient,
+							rs, 6);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_7)) {
+					// Drug Exposure 1
+					setAttributeValueDrugExposure(attribute, instance, patient,
+							rs, 7);
 				}
 			}
 
@@ -408,7 +513,7 @@ public class ClinicalAttributeFactory {
 
 		recentBloodHBRule.setAttributeValue(attribute, instance, patient);
 	}
-	
+
 	private static void setAttributeValueRecentCD4Gradient(Attribute attribute,
 			Instance instance, Patient patient, RegaService rs) {
 		Rule recentCD4GradientRule = rs.getRuleService().getRule(
@@ -416,13 +521,14 @@ public class ClinicalAttributeFactory {
 
 		recentCD4GradientRule.setAttributeValue(attribute, instance, patient);
 	}
-	
+
 	private static void setAttributeValueRecentVLGradient(Attribute attribute,
 			Instance instance, Patient patient, RegaService rs) {
 		Rule recentBloodVLGradientRule = rs.getRuleService().getRule(
 				RecentVLGradientRuleImpl.class);
 
-		recentBloodVLGradientRule.setAttributeValue(attribute, instance, patient);
+		recentBloodVLGradientRule.setAttributeValue(attribute, instance,
+				patient);
 	}
 
 	private static void setAttributeValueRecentBloodCC(Attribute attribute,
@@ -483,5 +589,23 @@ public class ClinicalAttributeFactory {
 				OtherDrugRuleImpl.class);
 
 		otherDrugRule.setAttributeValue(attribute, instance, patient);
+	}
+
+	// Drug Exposure
+	public static void setAttributeValueDrugExposure(Attribute attribute,
+			Instance instance, Patient patient, RegaService rs, int num) {
+		DrugExposureRuleImpl drugExposureRule = (DrugExposureRuleImpl)rs.getRuleService().getRule(
+				DrugExposureRuleImpl.class);
+
+		drugExposureRule.setAttributeValue(attribute, instance, patient, num);	
+	}
+
+	// Drug Exposure Count
+	private static void setAttributeValueDrugExposureCount(Attribute attribute,
+			Instance instance, Patient patient, RegaService rs) {
+		Rule drugExposureCountRule = rs.getRuleService().getRule(
+				DrugExposureCountRuleImpl.class);
+
+		drugExposureCountRule.setAttributeValue(attribute, instance, patient);
 	}
 }

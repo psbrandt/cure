@@ -298,6 +298,27 @@ public class RegaService implements ApplicationContextAware {
 
         return false;
     }
+    
+    public boolean isResistantToDrug(String drug, List<TestResult> testResults) {
+    	logger.info("Checking for resistance to: " + drug);
+    	
+    	for (TestResult result : testResults) {
+    		logger.info("Current result drug: " + result.getDrugGeneric().getGenericName());
+    		
+    		if (result.getDrugGeneric().getGenericName().equals(drug)) {
+    			
+    			logger.info("Result value: " + result.getValue());
+    			
+    			// This is drug we're interested in
+    			if (result.getValue().equals(GSS_RESULT_RESISTANT)) {
+    				logger.info("Found resistance to: " + drug);
+    				return true;
+    			}
+    		}
+    	}
+    	
+    	return false;
+    }
 
     /**
      * @param testResult
@@ -306,6 +327,14 @@ public class RegaService implements ApplicationContextAware {
     public boolean isGSSTestResult(TestResult testResult) {
         if (testResult.getTest().getTestType().getTestTypeIi() == DataService.REGA_GSS_TEST_TYPE_ID1
                 || testResult.getTest().getTestType().getTestTypeIi() == DataService.REGA_GSS_TEST_TYPE_ID2)
+            return true;
+        return false;
+    }
+    
+    public boolean isStanfordGSSTestResult(TestResult testResult) {
+       // if (testResult.getTest().getTestType().getTestTypeIi() == DataService.REGA_GSS_TEST_TYPE_ID1
+       //         || testResult.getTest().getTestType().getTestTypeIi() == DataService.REGA_GSS_TEST_TYPE_ID2)
+    	if (testResult.getTest().getTestIi() == DataService.REGA_STANFORD_RESISTANCE_TEST_II)
             return true;
         return false;
     }
@@ -395,6 +424,33 @@ public class RegaService implements ApplicationContextAware {
         }
 
         return latestGSSResults;
+    }
+    
+    public List<TestResult> getLatestStanfordGSSTestResults(Patient patient) {
+        List<TestResult> latestGSSResults = new ArrayList<TestResult>();
+
+        // Construct a list of GSS test result dates
+        Date currentLatestDate = null;
+        for (TestResult tr : patient.getTestResults()) {
+            if (isStanfordGSSTestResult(tr)) {
+                if (currentLatestDate == null) {
+                    // Choose first result date if it's not yet set
+                    currentLatestDate = tr.getTestDate();
+                    latestGSSResults.add(tr);
+                } else if (tr.getTestDate().after(currentLatestDate)) {
+                    // If we find a later result, clear the list and use the
+                    // date
+                    latestGSSResults.clear();
+                    latestGSSResults.add(tr);
+                    currentLatestDate = tr.getTestDate();
+                } else if (tr.getTestDate().equals(currentLatestDate)) {
+                    // Keep all results at this date
+                    latestGSSResults.add(tr);
+                }
+            }
+        }
+
+        return latestGSSResults;    
     }
 
     public PatientAttributeValue getPatientAttributeValue(Patient patient, String attribute) {

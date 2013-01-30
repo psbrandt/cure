@@ -83,6 +83,8 @@ public class RecentCD4GradientRuleImpl extends Rule {
 	        	domain[j] = Math.abs((baseDate.getTime() - recentCD4Counts.get(i).getTestDate().getTime())) / (1000 * 60 * 60 * 24);
 	        }
 	        
+	        //TODO: FIXME: Finish this up
+	        
         }
 	}
 
