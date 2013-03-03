@@ -46,10 +46,10 @@ public class DataService implements ApplicationContextAware {
 	public static Integer UNLABELLED_COUNT;
 
 	public static final String REGA_RESISTANCE_TEST = "REGA v8.0.1";
-	
+
 	public static final Integer REGA_RESISTANCE_TEST_ID1 = 51;
 	public static final Integer REGA_RESISTANCE_TEST_ID2 = 54;
-	
+
 	public static final String REGA_STANFORD_RESISTANCE_TEST = "HIVDB 6.0.5";
 	public static final Integer REGA_STANFORD_RESISTANCE_TEST_II = 57;
 
@@ -172,8 +172,13 @@ public class DataService implements ApplicationContextAware {
 
 		int i = 0;
 		for (Patient p : patients) {
-			logger.info("Adding patient[" + i++ + "]: " + p.getPatientId());
-			data.add(constuctInstanceFromPatient(p, attributes));
+			if (rs.hasViralIsolate(p)) {
+				logger.info("Adding patient[" + i++ + "]: " + p.getPatientId());
+				data.add(constuctInstanceFromPatient(p, attributes));
+			} else {
+				logger.info("Patient " + p.getPatientId()
+						+ " has no viral isolate.");
+			}
 		}
 
 		data.setClassIndex(ClassAttributeFactory.CLASS_ATTRIBUTE_INDEX);
@@ -348,6 +353,25 @@ public class DataService implements ApplicationContextAware {
 		return fVector;
 	}
 
+	public String trimOpCharacters(String val) {
+		if(val.startsWith("<") || val.startsWith("=")) {
+			return val.substring(1);
+		}
+		return val;
+	}
+	
+	public boolean patientPassesAcceptanceStudyCriteria(Patient p) {
+		RegaService rs = context.getBean(RegaService.class);
+
+		// 1. Patient must have at least one viral isolate
+		if (!rs.hasViralIsolate(p)) {
+			logger.info("Patient [" + p.getPatientId() + "] has no viral isolates.");
+			return false;
+		}
+
+		return true;
+	}
+
 	public XSSFWorkbook excelExport(String dataset, SVMConfigurationForm config) {
     	
     	ArrayList<Patient> patients = null;
@@ -438,165 +462,174 @@ public class DataService implements ApplicationContextAware {
         
         int row = 1;
         for (Patient p : patients) {
-        	XSSFRow tempRow = firstSheet.createRow(row);
-        	Instance instance = new SparseInstance(demographic.length + clinical.length + adherence.length + other.length);
+        	if (patientPassesAcceptanceStudyCriteria(p)) {
         	
-        	tempRow.createCell(0).setCellValue(p.getPatientId());
-        	
-            col = 1;
-            // Demographic
-            List<Attribute> demographicAttributes = DemographicAttributeFactory.createAttributes(demographic);
-            ArrayList<Attribute> demographicAttributesAL = new ArrayList<Attribute>(demographicAttributes);
-            Instances data = new Instances("dummy", demographicAttributesAL, 300);
-            for(Attribute attr : demographicAttributes) {
-            	XSSFCell tempCell = tempRow.createCell(col++);
-            	
-            	data.add(instance);
-            	
-            	DemographicAttributeFactory.addAttributeValue(attr, instance, p, rs);
-            	if(attr.isNumeric()) {
-            		
-            		Double d = instance.value(attr);
-            		
-            		if(d != Double.NaN)
-            			tempCell.setCellValue(d);
-            	
-            	} else {
-            		String val = instance.stringValue(data.attribute(attr.name()));
-            		
-            		if(!val.equals("dummy"))
-            			tempCell.setCellValue(val);
-            		
-            	}
-            }
-            
-            // Clinical
-            
-            List<Attribute> clinicalAttributes = ClinicalAttributeFactory.createAttributes(clinical, ruleService);
-            ArrayList<Attribute> clinicalAttributesAL = new ArrayList<Attribute>(clinicalAttributes);
-            Instances clinicalData = new Instances("dummy", clinicalAttributesAL, 300);
-            for(Attribute attr : clinicalAttributes) {
-            	XSSFCell tempCell = tempRow.createCell(col++);
-            	
-            	clinicalData.add(instance);
-            	
-            	ClinicalAttributeFactory.addAttributeValue(attr, instance, p, rs);
-            	if(attr.isNumeric()) {
-            		Double d = instance.value(attr);
-
-            		logger.info("Value for [" + attr.name() + "] is [" + d + "]");
-            		
-            			tempCell.setCellValue(d);      
-            			
-            			
-            		if(tempCell.getRawValue().equals("#NUM!"))
-            				tempCell.setCellValue("");
-            			
-            	} else {
-            		String val = instance.stringValue(clinicalData.attribute(attr.name()));
-            		
-            		if(!val.equals("dummy"))
-            			tempCell.setCellValue(val);
-            		
-            	}
-            }
-            
-            
-            // Adherence
-        	Instance dummyinstance = new SparseInstance(demographic.length + clinical.length + adherence.length + other.length);
-
-            List<Attribute> adherenceAttributes = AdherenceAttributeFactory.createAttributes(adherence, ruleService);
-            ArrayList<Attribute> adherenceAttributesAL = new ArrayList<Attribute>(adherenceAttributes);
-            Instances adherenceData = new Instances("dummy", adherenceAttributesAL, 300);
-            for(Attribute attr : adherenceAttributes) {
-            	XSSFCell tempCell = tempRow.createCell(col++);
-            	
-            	adherenceData.add(dummyinstance);
-            	
-            	AdherenceAttributeFactory.addAttributeValue(attr, dummyinstance, p, rs);
-            	if(attr.isNumeric()) {
-            		Double d = dummyinstance.value(attr);
-
-            			tempCell.setCellValue(d);      
-            			
-            			
-            		if(tempCell.getRawValue().equals("#NUM!"))
-            				tempCell.setCellValue("");
-            			
-            	} else {
-            		String val = dummyinstance.stringValue(adherenceData.attribute(attr.name()));
-            		
-            		if(!val.equals("dummy"))
-            			tempCell.setCellValue(val);
-            		
-            	}
-            }
-            	
-            // Other
-        	Instance otherdummyinstance = new SparseInstance(demographic.length + clinical.length + adherence.length + other.length);
-
-            List<Attribute> otherAttributes = OtherAttributeFactory.createAttributes(other, ruleService);
-            ArrayList<Attribute> otherAttributesAL = new ArrayList<Attribute>(otherAttributes);
-            Instances otherData = new Instances("dummy", otherAttributesAL, 300);
-            for(Attribute attr : otherAttributes) {
-            	XSSFCell tempCell = tempRow.createCell(col++);
-            	
-            	otherData.add(otherdummyinstance);
-            	
-            	OtherAttributeFactory.addAttributeValue(attr, otherdummyinstance, p, rs);
-            	if(attr.isNumeric()) {
-            		Double d = otherdummyinstance.value(attr);
-
-            			tempCell.setCellValue(d);      
-            			
-            			
-            		if(tempCell.getRawValue().equals("#NUM!"))
-            				tempCell.setCellValue("");
-            			
-            	} else {
-            		String val = otherdummyinstance.stringValue(otherData.attribute(attr.name()));
-            		
-            		if(!val.equals("dummy"))
-            			tempCell.setCellValue(val);
-            		
-            	}
-            }
-            
-            // Class
-            //XSSFCell tempCell = tempRow.createCell(col++);
-            //tempCell.setCellValue(rs.classifyPatient(p));
-            
-            // Labels
-        	Instance labeldummyinstance = new SparseInstance(demographic.length + clinical.length + adherence.length + other.length + ClassAttributeFactory.MULTI_LABEL_DRUG_RESISTANCE_LABELS.size());
-
-            List<Attribute> labelAttributes = ClassAttributeFactory.getLabelAttributes();//OtherAttributeFactory.createAttributes(other, ruleService);
-            ArrayList<Attribute> labelAttributesAL = new ArrayList<Attribute>(labelAttributes);
-            Instances labelData = new Instances("dummy", labelAttributesAL, 300);
-            for(Attribute attr : labelAttributes) {
-            	XSSFCell tempCell = tempRow.createCell(col++);
-            	
-            	labelData.add(labeldummyinstance);
-            	
-            	ClassAttributeFactory.addAttributeValue(attr, labeldummyinstance, p, rs);
-            	if(attr.isNumeric()) {
-            		Double d = labeldummyinstance.value(attr);
-
-            			tempCell.setCellValue(d);      
-            			
-            			
-            		if(tempCell.getRawValue().equals("#NUM!"))
-            				tempCell.setCellValue("");
-            			
-            	} else {
-            		String val = labeldummyinstance.stringValue(labelData.attribute(attr.name()));
-            		
-            		if(!val.equals("dummy"))
-            			tempCell.setCellValue(val);
-            		
-            	}
-            }
-            
-        	row++;
+	        	XSSFRow tempRow = firstSheet.createRow(row);
+	        	Instance instance = new SparseInstance(demographic.length + clinical.length + adherence.length + other.length);
+	        	
+	        	tempRow.createCell(0).setCellValue(p.getPatientId());
+	        	
+	            col = 1;
+	            // Demographic
+	            List<Attribute> demographicAttributes = DemographicAttributeFactory.createAttributes(demographic);
+	            ArrayList<Attribute> demographicAttributesAL = new ArrayList<Attribute>(demographicAttributes);
+	            Instances data = new Instances("dummy", demographicAttributesAL, 300);
+	            for(Attribute attr : demographicAttributes) {
+	            	XSSFCell tempCell = tempRow.createCell(col++);
+	            	
+	            	data.add(instance);
+	            	
+	            	DemographicAttributeFactory.addAttributeValue(attr, instance, p, rs);
+	            	if(attr.isNumeric()) {
+	            		
+	            		Double d = instance.value(attr);
+	            		
+	            		if(d != Double.NaN)
+	            			tempCell.setCellValue(d);
+	            	
+	            	} else {
+	            		String val = instance.stringValue(data.attribute(attr.name()));
+	            		
+	            		if(!val.equals("dummy"))
+	            			tempCell.setCellValue(val);
+	            		
+	            	}
+	            }
+	            
+	            // Clinical
+	            
+	            List<Attribute> clinicalAttributes = ClinicalAttributeFactory.createAttributes(clinical, ruleService);
+	            ArrayList<Attribute> clinicalAttributesAL = new ArrayList<Attribute>(clinicalAttributes);
+	            Instances clinicalData = new Instances("dummy", clinicalAttributesAL, 300);
+	            instance = new SparseInstance(demographic.length + clinical.length + adherence.length + other.length);
+	            for(Attribute attr : clinicalAttributes) {
+	            	XSSFCell tempCell = tempRow.createCell(col++);
+	            	
+	            	clinicalData.add(instance);
+	            	
+	            	ClinicalAttributeFactory.addAttributeValue(attr, instance, p, rs);
+	            	if(attr.isNumeric()) {
+	            		Double d = instance.value(attr);
+	            		
+	            		boolean isMissing = instance.isMissing(attr);
+	
+	            		logger.info("Value for [" + attr.name() + "] is [" + d + "]");
+	            		
+	            			tempCell.setCellValue(d);      
+	            			
+	            			
+	            		if(tempCell.getRawValue().equals("#NUM!"))
+	            				tempCell.setCellValue("");
+	            			
+	            	} else {
+	            		String val = instance.stringValue(clinicalData.attribute(attr.name()));
+	            		
+	            		if(!val.equals("dummy"))
+	            			tempCell.setCellValue(val);
+	            		
+	            	}
+	            }
+	            
+	            
+	            // Adherence
+	        	Instance dummyinstance = new SparseInstance(demographic.length + clinical.length + adherence.length + other.length);
+	
+	            List<Attribute> adherenceAttributes = AdherenceAttributeFactory.createAttributes(adherence, ruleService);
+	            ArrayList<Attribute> adherenceAttributesAL = new ArrayList<Attribute>(adherenceAttributes);
+	            Instances adherenceData = new Instances("dummy", adherenceAttributesAL, 300);
+	            instance = new SparseInstance(demographic.length + clinical.length + adherence.length + other.length);
+	            for(Attribute attr : adherenceAttributes) {
+	            	XSSFCell tempCell = tempRow.createCell(col++);
+	            	
+	            	adherenceData.add(dummyinstance);
+	            	
+	            	AdherenceAttributeFactory.addAttributeValue(attr, dummyinstance, p, rs);
+	            	if(attr.isNumeric()) {
+	            		Double d = dummyinstance.value(attr);
+	
+	            			tempCell.setCellValue(d);      
+	            			
+	            			
+	            		if(tempCell.getRawValue().equals("#NUM!"))
+	            				tempCell.setCellValue("");
+	            			
+	            	} else {
+	            		String val = dummyinstance.stringValue(adherenceData.attribute(attr.name()));
+	            		
+	            		if(!val.equals("dummy"))
+	            			tempCell.setCellValue(val);
+	            		
+	            	}
+	            }
+	            	
+	            // Other
+	        	Instance otherdummyinstance = new SparseInstance(demographic.length + clinical.length + adherence.length + other.length);
+	
+	            List<Attribute> otherAttributes = OtherAttributeFactory.createAttributes(other, ruleService);
+	            ArrayList<Attribute> otherAttributesAL = new ArrayList<Attribute>(otherAttributes);
+	            Instances otherData = new Instances("dummy", otherAttributesAL, 300);
+	            instance = new SparseInstance(demographic.length + clinical.length + adherence.length + other.length);
+	            for(Attribute attr : otherAttributes) {
+	            	XSSFCell tempCell = tempRow.createCell(col++);
+	            	
+	            	otherData.add(otherdummyinstance);
+	            	
+	            	OtherAttributeFactory.addAttributeValue(attr, otherdummyinstance, p, rs);
+	            	if(attr.isNumeric()) {
+	            		Double d = otherdummyinstance.value(attr);
+	
+	            			tempCell.setCellValue(d);      
+	            			
+	            			
+	            		if(tempCell.getRawValue().equals("#NUM!"))
+	            				tempCell.setCellValue("");
+	            			
+	            	} else {
+	            		String val = otherdummyinstance.stringValue(otherData.attribute(attr.name()));
+	            		
+	            		if(!val.equals("dummy"))
+	            			tempCell.setCellValue(val);
+	            		
+	            	}
+	            }
+	            
+	            // Class
+	            //XSSFCell tempCell = tempRow.createCell(col++);
+	            //tempCell.setCellValue(rs.classifyPatient(p));
+	            
+	            // Labels
+	        	Instance labeldummyinstance = new SparseInstance(demographic.length + clinical.length + adherence.length + other.length + ClassAttributeFactory.MULTI_LABEL_DRUG_RESISTANCE_LABELS.size());
+	
+	            List<Attribute> labelAttributes = ClassAttributeFactory.getLabelAttributes();//OtherAttributeFactory.createAttributes(other, ruleService);
+	            ArrayList<Attribute> labelAttributesAL = new ArrayList<Attribute>(labelAttributes);
+	            Instances labelData = new Instances("dummy", labelAttributesAL, 300);
+	            instance = new SparseInstance(demographic.length + clinical.length + adherence.length + other.length);
+	            for(Attribute attr : labelAttributes) {
+	            	XSSFCell tempCell = tempRow.createCell(col++);
+	            	
+	            	labelData.add(labeldummyinstance);
+	            	
+	            	ClassAttributeFactory.addAttributeValue(attr, labeldummyinstance, p, rs);
+	            	if(attr.isNumeric()) {
+	            		Double d = labeldummyinstance.value(attr);
+	
+	            			tempCell.setCellValue(d);      
+	            			
+	            			
+	            		if(tempCell.getRawValue().equals("#NUM!"))
+	            				tempCell.setCellValue("");
+	            			
+	            	} else {
+	            		String val = labeldummyinstance.stringValue(labelData.attribute(attr.name()));
+	            		
+	            		if(!val.equals("dummy"))
+	            			tempCell.setCellValue(val);
+	            		
+	            	}
+	            }
+	            
+	        	row++;
+        	}
         }
         
         return workbook;

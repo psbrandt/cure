@@ -1,7 +1,5 @@
 package net.pascalbrandt.dsm;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +19,9 @@ import weka.classifiers.functions.LibSVM;
 import weka.core.Attribute;
 import weka.core.Instances;
 import weka.core.SelectedTag;
-import weka.core.converters.ArffSaver;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Remove;
+import weka.filters.unsupervised.instance.SparseToNonSparse;
 
 @Service("SVMService")
 public class SVMService implements ApplicationContextAware {
@@ -85,8 +85,21 @@ public class SVMService implements ApplicationContextAware {
         //saver.setDestination(new File("./data/test.arff"));   // **not** necessary in 3.5.4 and later
         
         
+        /**
+         * Change from Sparse to NonSparse
+         */
+        Instances newData = null;
+        try {
+	        SparseToNonSparse stns = new SparseToNonSparse();	  		// new instance of filter                 
+	        stns.setInputFormat(trainingData);                  		// inform filter about dataset
+	        newData = Filter.useFilter(trainingData, stns);   			// apply filter
+        } catch (Exception e) {
+        	logger.info("Error converting from sparse to non-sparse: " + e.getMessage());
+        }
         
-        return trainingData.toString();
+        return newData.toString();
+        
+        //return trainingData.toString();
         
         /*
         // ARFF Header Section

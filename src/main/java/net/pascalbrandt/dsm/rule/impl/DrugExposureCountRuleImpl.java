@@ -32,7 +32,7 @@ public class DrugExposureCountRuleImpl extends Rule {
 			
 			for (TherapyGeneric tg : therapyGenerics) {
 				String name = tg.getId().getDrugGeneric().getGenericName();
-				//logger.info(">> " + name);
+				logger.info("EXP>> " + name);
 				
 				if(drugs.containsKey(name)) {
 					drugs.put(name, (Integer)drugs.get(name) + 1);
