@@ -39,7 +39,7 @@ public class OtherAttributeFactory {
 	// Rega Attribute Names
 	public static final String OTHER_REGA_ATTRIBUTE_ALCOHOL_CONSUMPTION = "8_Alcohol";
 	public static final String OTHER_REGA_ATTRIBUTE_TRADITIONAL_MEDICINE = "7_Traditional_Medicine";
-	public static final String OTHER_REGA_ATTRIBUTE_IDENTIFIED_REASON = " 14_Identified_reason";
+	public static final String OTHER_REGA_ATTRIBUTE_IDENTIFIED_REASON = "14_Identified_reason";
 	public static final String OTHER_REGA_ATTRIBUTE_OTHER_COMORBIDITIES = "13_coMorbidities";
 	public static final String OTHER_REGA_ATTRIBUTE_DIARRHEA_OR_VOMITING = "13_coMorbidities_diarrehea";
 	public static final String OTHER_REGA_ATTRIBUTE_TB_TREATMENT_SOON = "13_coMorbidities_TB_start_soon";

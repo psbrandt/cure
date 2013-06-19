@@ -51,6 +51,7 @@ public class RegaService implements ApplicationContextAware {
 	public static final String SORT_ORDER_DESC = "desc";
 
 	public static final String AC_FAILURE_CLINIC_DATASET_DESCRIPTOR = "AC_Failure Management Clinic";
+	public static final String AC_FAILURE_SUPPORT_CAMP_DATASET_DESCRIPTOR = "AC_Failure_Support_Camp";
 
 	public static final double ONE_YEAR_IN_DAYS = 365;
 	public static final double SIX_MONTHS_IN_DAYS = 180;
@@ -58,6 +59,8 @@ public class RegaService implements ApplicationContextAware {
 	public static final double TWO_WEEKS_IN_DAYS = 14;
 	public static final double THIRTEEN_MONTHS_IN_DAYS = 390;
 	public static final double FOUR_WEEKS_IN_DAYS = 28;
+	
+	public static final double INITIATION_ACTION_WINDOW = ONE_YEAR_IN_DAYS + SIX_MONTHS_IN_DAYS;
 
 	ApplicationContext context;
 
@@ -73,6 +76,10 @@ public class RegaService implements ApplicationContextAware {
 
 	public RuleService getRuleService() {
 		return context.getBean(RuleService.class);
+	}
+	
+	public DataService getDataService() {
+		return context.getBean(DataService.class);
 	}
 
 	public void setRegaDAO(RegaDAO dao) {
@@ -612,18 +619,20 @@ public class RegaService implements ApplicationContextAware {
 	}
 
 	/*
-	 * Return all CD4 counts up to 6 months before the sequence date.
+	 * Return all CD4 counts up to ONE YEAR before the sequence date.
 	 * 
 	 * If there is no sequence data, the sequence date is taken to be the date
 	 * of the most recent CD4 count
 	 */
 	public List<TestResult> getRecentCD4Counts(Patient patient) {
+		List<TestResult> results = new ArrayList<TestResult>();
+		
 		List<TestResult> CD4Results = getListOfTestResultsSortedByDate(
 				RegaService.CD4_COUNT_TEST_ID, patient.getPatientIi(),
-				RegaService.SORT_ORDER_DESC);
+				RegaService.SORT_ORDER_ASC);
 
 		if (CD4Results.size() < 2)
-			return null; // We have too few CD4 counts
+			return CD4Results; // We have too few CD4 counts
 
 		Date endDate = getFirstSequenceDate(patient);
 
@@ -632,7 +641,7 @@ public class RegaService implements ApplicationContextAware {
 		}
 
 		// Get rid of any results not in the last 6 months
-		List<TestResult> results = new ArrayList<TestResult>();
+		
 		for (TestResult ts : CD4Results) {
 			Date resultDate = ts.getTestDate();
 
@@ -642,10 +651,6 @@ public class RegaService implements ApplicationContextAware {
 			if (diffInDays <= ONE_YEAR_IN_DAYS)
 				results.add(ts); // Only include the latest results
 		}
-
-		// Make sure we still have enough results
-		if (CD4Results.size() < 2)
-			return null;
 
 		return results;
 	}
@@ -672,5 +677,104 @@ public class RegaService implements ApplicationContextAware {
 		}
 		
 		return exposureLength;
+	}
+
+	public boolean virusEverSuppressed(Patient patient) {
+		List<TestResult> VLResults = getListOfTestResultsSortedByDate(RegaService.VIRAL_LOAD_TEST_ID,
+                patient.getPatientIi(), RegaService.SORT_ORDER_DESC);
+		
+		for(TestResult tr : VLResults) {
+			String strVal = tr.getValue();
+			
+            if(strVal.contains("<") || strVal.contains("=")) {
+                strVal = strVal.substring(1); // get rid of the first character
+            }
+            
+            Double tempResult = Double.parseDouble(strVal);
+            
+            if(tempResult <= 1000)
+            	return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Get the list of all the viral loads for the patient up to date of the first sequence
+	 * 
+	 * @param p The patient
+	 * @return A list of the patient's viral load up to the first sequence date
+	 */
+	public List<Double> getViralLoads(Patient patient) {
+		List<Double> viralLoads = new ArrayList<Double>();
+		
+		List<TestResult> VLResults = getListOfTestResultsSortedByDate(RegaService.VIRAL_LOAD_TEST_ID,
+                patient.getPatientIi(), RegaService.SORT_ORDER_ASC);
+		
+		Date sequenceDate = getFirstSequenceDate(patient);
+		
+		for(TestResult tr : VLResults) {
+			if(!tr.getTestDate().after(sequenceDate)) {
+				String strVal = tr.getValue();
+				
+	            if(strVal.contains("<") || strVal.contains("=")) {
+	                strVal = strVal.substring(1); // get rid of the first character
+	            }
+	            
+	            viralLoads.add(Double.parseDouble(strVal));	
+			}
+		}
+		
+		return viralLoads;
+	}
+	
+	public List<TestResult> getPostTreatmentCD4Counts(Patient patient) {
+		List<TestResult> postTreatmentCD4Counts = new ArrayList<TestResult	>();
+		
+		List<TestResult> CD4Results = getListOfTestResultsSortedByDate(RegaService.CD4_COUNT_TEST_ID,
+                patient.getPatientIi(), RegaService.SORT_ORDER_ASC);
+		
+		Date sequenceDate = getFirstSequenceDate(patient);
+		
+		Date ARTInitiationDate = getARTInitiationDate(patient.getPatientIi());
+		
+		Double baselineCD4 = getBaselineCD4(patient);
+		
+		if(patient.getPatientId().equals("RES429")) {
+			logger.info("ok");
+		}
+		
+		if(baselineCD4 == null) {
+			// If there's not baseline, look from initiation date
+			
+			for (TestResult tr : CD4Results) {
+				if(!tr.getTestDate().before(ARTInitiationDate) && // Result must be after initiation
+				   !tr.getTestDate().after(sequenceDate) && // Don't look further than the sequence date
+				   getDataService().getDiffInDays(ARTInitiationDate, tr.getTestDate()) <= INITIATION_ACTION_WINDOW) // Only consider the first year of action
+				{
+					logger.info("PTCD4(1)>> ["+tr.getValue()+"]::["+tr.getTestDate()+"]");
+					
+					postTreatmentCD4Counts.add(tr);
+				}
+			} 			
+		} else {
+			boolean valid = false;
+			
+			for (TestResult tr : CD4Results) {
+				if((new Double(tr.getValue())).equals(baselineCD4))
+					valid = true;
+				
+				if(valid && // We've found the baseline value
+				   !tr.getTestDate().after(sequenceDate) && // Don't look further than the sequence date
+				   getDataService().getDiffInDays(ARTInitiationDate, tr.getTestDate()) <= INITIATION_ACTION_WINDOW) // Only consider the first year of action
+				{
+					logger.info("PTCD4(2)>> ["+tr.getValue()+"]::["+tr.getTestDate()+"]");
+					
+					postTreatmentCD4Counts.add(tr);
+				}
+			} 						
+		}
+		
+		return postTreatmentCD4Counts;
 	}
 }

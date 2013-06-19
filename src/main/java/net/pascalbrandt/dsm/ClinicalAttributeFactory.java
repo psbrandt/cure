@@ -14,7 +14,10 @@ import net.pascalbrandt.dsm.rule.impl.BaselineVLRuleImpl;
 import net.pascalbrandt.dsm.rule.impl.DrugExposureCountRuleImpl;
 import net.pascalbrandt.dsm.rule.impl.DrugExposureNumericRuleImpl;
 import net.pascalbrandt.dsm.rule.impl.DrugExposureRuleImpl;
+import net.pascalbrandt.dsm.rule.impl.MeanViralLoadRuleImpl;
+import net.pascalbrandt.dsm.rule.impl.MedianViralLoadRuleImpl;
 import net.pascalbrandt.dsm.rule.impl.OtherDrugRuleImpl;
+import net.pascalbrandt.dsm.rule.impl.PostTreatmentCD4GradientRuleImpl;
 import net.pascalbrandt.dsm.rule.impl.PreResistanceImmunoFailure;
 import net.pascalbrandt.dsm.rule.impl.PreResistanceTestingCD4RuleImpl;
 import net.pascalbrandt.dsm.rule.impl.PreResistanceTestingViralLoadRuleImpl;
@@ -23,6 +26,7 @@ import net.pascalbrandt.dsm.rule.impl.RecentBloodHBRuleImpl;
 import net.pascalbrandt.dsm.rule.impl.RecentCD4GradientRuleImpl;
 import net.pascalbrandt.dsm.rule.impl.RecentVLGradientRuleImpl;
 import net.pascalbrandt.dsm.rule.impl.TimeOnFailingRegimenRuleImpl;
+import net.pascalbrandt.dsm.rule.impl.VirusEverSuppressedRuleImpl;
 import net.sf.regadb.db.Patient;
 
 import org.slf4j.Logger;
@@ -32,6 +36,9 @@ import weka.core.Attribute;
 import weka.core.Instance;
 
 public class ClinicalAttributeFactory {
+	public static final String ATTRIBUTE_VALUE_NO = "No";
+	public static final String ATTRIBUTE_VALUE_YES = "Yes";
+
 	private static final Logger logger = LoggerFactory
 			.getLogger(ClinicalAttributeFactory.class);
 
@@ -48,6 +55,9 @@ public class ClinicalAttributeFactory {
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_CD4_GRADIENT = "Recent CD4 Count Gradient";
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_RECENT_VL_GRADIENT = "Recent Viral Load Gradient";
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_COUNT = "Drug Exposure Count";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_MEAN_VIRAL_LOAD = "Mean Viral Load";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_MEDIAN_VIRAL_LOAD = "Median Viral Load";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_POST_TREATMENT_CD4_GRADIENT = "Post-Treatment CD4 Count Gradient";
 
 	// Pretty Categorical Attribute Names
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_IMMUNO_FAILURE = "Pre-Resistance Testing Immunological Failure";
@@ -60,15 +70,22 @@ public class ClinicalAttributeFactory {
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_1 = "Other Drug 1";
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_2 = "Other Drug 2";
 	public static final String CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_3 = "Other Drug 3";
-	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_1 = "Drug Exposure 1";
-	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_2 = "Drug Exposure 2";
-	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_3 = "Drug Exposure 3";
-	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_4 = "Drug Exposure 4";
-	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_5 = "Drug Exposure 5";
-	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_6 = "Drug Exposure 6";
-	public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_7 = "Drug Exposure 7";
+	public static final String CLINICAL_PRETTY_ATTRIBUTE_EVER_SURPRESSED = "Virus Ever Suppressed";
+	/*
+	 * public static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_1 =
+	 * "Drug Exposure 1"; public static final String
+	 * CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_2 = "Drug Exposure 2"; public
+	 * static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_3 =
+	 * "Drug Exposure 3"; public static final String
+	 * CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_4 = "Drug Exposure 4"; public
+	 * static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_5 =
+	 * "Drug Exposure 5"; public static final String
+	 * CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_6 = "Drug Exposure 6"; public
+	 * static final String CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_7 =
+	 * "Drug Exposure 7";
+	 */
 
-	// Drug Export Pretty Attribute Names
+	// Drug Exposure Pretty Attribute Names
 	public static final Set<String> CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE = new HashSet<String>(
 			Arrays.asList(new String[] { "Lopinavir/r Exposure",
 					"Zidovudine Exposure", "Lamivudine Exposure",
@@ -105,9 +122,12 @@ public class ClinicalAttributeFactory {
 					CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_CC,
 					CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_ALT,
 					CLINICAL_PRETTY_ATTRIBUTE_RECENT_BLOOD_HB,
-					// CLINICAL_PRETTY_ATTRIBUTE_RECENT_CD4_GRADIENT,
+					CLINICAL_PRETTY_ATTRIBUTE_RECENT_CD4_GRADIENT,
 					// CLINICAL_PRETTY_ATTRIBUTE_RECENT_VL_GRADIENT,
-					CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_COUNT }));
+					CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_COUNT,
+					CLINICAL_PRETTY_ATTRIBUTE_MEAN_VIRAL_LOAD,
+					CLINICAL_PRETTY_ATTRIBUTE_MEDIAN_VIRAL_LOAD,
+					CLINICAL_PRETTY_ATTRIBUTE_POST_TREATMENT_CD4_GRADIENT }));
 
 	// Add the set of drug exposure attributes
 	static {
@@ -124,7 +144,7 @@ public class ClinicalAttributeFactory {
 	static {
 		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
 				CLINICAL_PRETTY_ATTRIBUTE_PRE_RESISTANCE_IMMUNO_FAILURE,
-				new String[] { "dummy", "Yes", "No" });
+				new String[] { "dummy", ATTRIBUTE_VALUE_YES, ATTRIBUTE_VALUE_NO });
 		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
 				CLINICAL_PRETTY_ATTRIBUTE_TRANSMISSION_GROUP, new String[] {
 						"dummy", "homosexual + IVDU", "haemophiliac",
@@ -149,13 +169,17 @@ public class ClinicalAttributeFactory {
 						"dummy", "Regimen 1", "Regimen 2", "MDR" });
 		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
 				CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_1, new String[] { "dummy",
-						"Yes", "No" });
+						ATTRIBUTE_VALUE_YES, ATTRIBUTE_VALUE_NO });
 		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
 				CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_2, new String[] { "dummy",
-						"Yes", "No" });
+						ATTRIBUTE_VALUE_YES, ATTRIBUTE_VALUE_NO });
 		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
 				CLINICAL_PRETTY_ATTRIBUTE_OTHER_DRUG_3, new String[] { "dummy",
-						"Yes", "No" });
+						ATTRIBUTE_VALUE_YES, ATTRIBUTE_VALUE_NO });
+		CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
+				CLINICAL_PRETTY_ATTRIBUTE_EVER_SURPRESSED, new String[] {
+						ATTRIBUTE_VALUE_YES, ATTRIBUTE_VALUE_NO });
+
 		/*
 		 * CLINICAL_CATEGORITCAL_ATTRIBUTES.put(
 		 * CLINICAL_PRETTY_ATTRIBUTE_DRUG_EXPOSURE_1, new String[] { "dummy",
@@ -324,10 +348,26 @@ public class ClinicalAttributeFactory {
 						// We only need one of these for all the exposure rules
 						if (ruleService
 								.getRule(DrugExposureNumericRuleImpl.class) == null) {
-							ruleService.addRule(
-									DrugExposureNumericRuleImpl.class,
-									new DrugExposureNumericRuleImpl(ruleService));
+							ruleService
+									.addRule(DrugExposureNumericRuleImpl.class,
+											new DrugExposureNumericRuleImpl(
+													ruleService));
 						}
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_MEAN_VIRAL_LOAD)) {
+						// Mean Viral Load
+						ruleService.addRule(MeanViralLoadRuleImpl.class,
+								new MeanViralLoadRuleImpl(ruleService));
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_MEDIAN_VIRAL_LOAD)) {
+						// Median Viral Load
+						ruleService.addRule(MedianViralLoadRuleImpl.class,
+								new MedianViralLoadRuleImpl(ruleService));
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_POST_TREATMENT_CD4_GRADIENT)) {
+						// Post Treatment CD4 Count Gradient
+						ruleService.addRule(PostTreatmentCD4GradientRuleImpl.class,
+								new PostTreatmentCD4GradientRuleImpl(ruleService));
 					}
 				}
 
@@ -370,6 +410,11 @@ public class ClinicalAttributeFactory {
 						 * ruleService.addRule(DrugExposureRuleImpl.class, new
 						 * DrugExposureRuleImpl(ruleService)); }
 						 */
+					} else if (attributeName
+							.equals(CLINICAL_PRETTY_ATTRIBUTE_EVER_SURPRESSED)) {
+						// Virus Ever Suppressed
+						ruleService.addRule(VirusEverSuppressedRuleImpl.class,
+								new VirusEverSuppressedRuleImpl(ruleService));
 					}
 				}
 			}
@@ -447,7 +492,22 @@ public class ClinicalAttributeFactory {
 					// Drug exposure attribute
 					setAttributeValueDrugExposureNumeric(attribute, instance,
 							patient, rs);
-				}
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_MEAN_VIRAL_LOAD)) {
+					// Mean Viral Load
+					setAttributeValueMeanViralLoad(attribute, instance,
+							patient, rs);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_MEDIAN_VIRAL_LOAD)) {
+					// Mean Viral Load
+					setAttributeValueMedianViralLoad(attribute, instance,
+							patient, rs);
+				} else if (attribute.name().equals(
+						CLINICAL_PRETTY_ATTRIBUTE_POST_TREATMENT_CD4_GRADIENT)) {
+					// Post Treatment CD4 Gradient
+					setAttributeValuePostTreatmentCD4Gradient(attribute, instance,
+							patient, rs);
+				}	
 			}
 
 			return instance;
@@ -512,6 +572,8 @@ public class ClinicalAttributeFactory {
 					 * Exposure 1 setAttributeValueDrugExposure(attribute,
 					 * instance, patient, rs, 7);
 					 */
+				} else if (attribute.name().equals(CLINICAL_PRETTY_ATTRIBUTE_EVER_SURPRESSED)) {
+					setAttributeValueVirusEverSuppressed(attribute, instance, patient, rs);
 				}
 			}
 
@@ -542,6 +604,7 @@ public class ClinicalAttributeFactory {
 		recentBloodHBRule.setAttributeValue(attribute, instance, patient);
 	}
 
+	// Recent CD4 Gradient
 	private static void setAttributeValueRecentCD4Gradient(Attribute attribute,
 			Instance instance, Patient patient, RegaService rs) {
 		Rule recentCD4GradientRule = rs.getRuleService().getRule(
@@ -657,4 +720,41 @@ public class ClinicalAttributeFactory {
 
 		drugExposureCountRule.setAttributeValue(attribute, instance, patient);
 	}
+	
+	// Virus Ever Suppressed
+	private static void setAttributeValueVirusEverSuppressed(Attribute attribute,
+			Instance instance, Patient patient, RegaService rs) {
+		Rule virusEverSuppressedRule = rs.getRuleService().getRule(
+				VirusEverSuppressedRuleImpl.class);
+		
+		virusEverSuppressedRule.setAttributeValue(attribute, instance, patient);
+	}
+	
+	// Mean Viral Load
+	private static void setAttributeValueMeanViralLoad(Attribute attribute,
+			Instance instance, Patient patient, RegaService rs) {
+		Rule meanViralLoadRule = rs.getRuleService().getRule(
+				MeanViralLoadRuleImpl.class);
+		
+		meanViralLoadRule.setAttributeValue(attribute, instance, patient);
+	}
+	
+	// Median Viral Load
+	private static void setAttributeValueMedianViralLoad(Attribute attribute,
+			Instance instance, Patient patient, RegaService rs) {
+		Rule medianViralLoadRule = rs.getRuleService().getRule(
+				MedianViralLoadRuleImpl.class);
+		
+		medianViralLoadRule.setAttributeValue(attribute, instance, patient);
+	}
+	
+	// Post Treatment CD4 Gradient
+	private static void setAttributeValuePostTreatmentCD4Gradient(Attribute attribute,
+			Instance instance, Patient patient, RegaService rs) {
+		Rule postTreatmentCD4GradientRule = rs.getRuleService().getRule(
+				PostTreatmentCD4GradientRuleImpl.class);
+		
+		postTreatmentCD4GradientRule.setAttributeValue(attribute, instance, patient);
+	}
+
 }

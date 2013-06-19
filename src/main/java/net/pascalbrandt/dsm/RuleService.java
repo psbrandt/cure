@@ -31,6 +31,10 @@ public class RuleService implements ApplicationContextAware {
     public RegaService getRegaService() {
         return context.getBean(RegaService.class);
     }
+    
+    public DataService getDataService() {
+    	return context.getBean(DataService.class);
+    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
