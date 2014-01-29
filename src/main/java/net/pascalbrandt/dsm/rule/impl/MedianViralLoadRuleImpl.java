@@ -21,12 +21,15 @@ public class MedianViralLoadRuleImpl extends Rule {
 			Patient patient) {
 		List<Double> viralLoads = ruleService.getRegaService().getViralLoads(patient);
 		
+		if(viralLoads.size() == 0)
+			return;
+		
 		instance.setValue(attribute, median(viralLoads));
 	}
 	
 	public double median(List<Double> values) {
 		Collections.sort(values);
-
+		
 		if (values.size() % 2 == 1)
 			return values.get((values.size() + 1) / 2 - 1);
 		else {

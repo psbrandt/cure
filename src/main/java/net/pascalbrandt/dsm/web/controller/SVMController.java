@@ -92,7 +92,7 @@ public class SVMController implements ApplicationContextAware {
         request.getSession().setAttribute("config", config);
         
         try {
-			response.sendRedirect("/dsm/arff");
+			response.sendRedirect("/cure/arff");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -109,7 +109,7 @@ public class SVMController implements ApplicationContextAware {
         request.getSession().setAttribute("config", config);
         
         try {
-			response.sendRedirect("/dsm/excel");
+			response.sendRedirect("/cure/excel");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -131,11 +131,11 @@ public class SVMController implements ApplicationContextAware {
 
         // SVMConfigurationForm conf = (SVMConfigurationForm)model.
 
-        logger.info("type: " + config.getType());
-        logger.info("kernel: " + config.getKernel());
-        logger.info("gamma: " + config.getGamma());
-        logger.info("C: " + config.getC());
-        logger.info("Attrs" + config.getSelectedDemographicAttributes().length);
+        // logger.info("type: " + config.getType());
+        // logger.info("kernel: " + config.getKernel());
+        // logger.info("gamma: " + config.getGamma());
+        // logger.info("C: " + config.getC());
+        // logger.info("Attrs" + config.getSelectedDemographicAttributes().length);
 
         // Evaluation eval = ss.evaluateClassifier(config);
 

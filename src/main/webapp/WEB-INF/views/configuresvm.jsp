@@ -8,7 +8,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>DSM</title>
+    <title>CuRE</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -47,12 +47,11 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="#">Decision Support Monitor</a>
+          <a class="brand" href="#">CuRE</a>
           <div class="nav-collapse">
             <ul class="nav">
               <li><a href="${pageContext.request.contextPath}/">Home</a></li>
-              <li><a href="${pageContext.request.contextPath}/dashboard">Dashboard</a></li>
-              <li class="active"><a href="${pageContext.request.contextPath}/classification">Classification</a></li>
+              <li class="active"><a href="${pageContext.request.contextPath}/classification">Exporter</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -61,60 +60,11 @@
 
     <div class="container">
 
-      <h1>Support Vector Machine Configuration</h1> <br/>
+      <h1>Dataset Configuration</h1> <br/>
+
       <p>
-      	<div class="alert alert-info">
-  			Select the type of SVM and configure it's parameters.
-		</div>
 		 <form:form modelAttribute="config" class="form-horizontal" action="${pageContext.request.contextPath}/classification" method="post">
 		  <fieldset>
-		  <!-- Type -->
-		    <div class="control-group">		    
-		      <label class="control-label" for="type">SVM Type</label>
-		      <div class="controls">
-		        <!-- <select class="input-medium" id="type" name="type">
-		        	<option selected="selected" value="0">C-SVC</option>
-	    			<option value="1">nu-SVC</option>
-	   			 	<option value="2">one-class SVM</option>
-	    			<option value="3">epsilon-SVR</option>
-	    			<option value="4">nu-SVR</option>
-		        </select>
-		        -->
-		        <form:select path="type" items="${svmTypes}" cssClass="input-medium"/>
-		      </div>
-		    </div>
-		  <!-- Kernel -->
-		  		    <div class="control-group">		    
-		      <label class="control-label" for="kernel">Kernek Type</label>
-		      <div class="controls">
-		      	<!-- 
-		        <select class="input-medium" id="kernel" name="kernel">
-		        	<option value="0">Linear</option>
-	    			<option value="1">Polynomial</option>
-	    			<option selected="selected" value="2">Radial Basis</option>
-	    			<option value="3">Sigmoid</option>
-		        </select>
-		        -->
-		        <form:select path="kernel" items="${kernelTypes}" id="kernelType" cssClass="input-medium"/>
-			   <script type="text/javascript">
-			    	document.getElementById("kernelType").selectedIndex = 2;
-			   </script>		      
-		    	</div>
-		    </div>
-		    <!-- Gamma -->
-		  	<div class="control-group">		    
-		      <label class="control-label" for="gamma">&#947;</label>
-		      <div class="controls">
-		        <form:input cssClass="input-medium" path="gamma"/>
-		      </div>
-		    </div>
-		    <!-- C -->
-		  	<div class="control-group">		    
-		      <label class="control-label" for="C">C</label>
-		      <div class="controls">
-		       <form:input cssClass="input-medium" path="C"/>
-		      </div>
-		    </div>
 		    
 		    <div class="alert alert-info">
   				Select the feature vector attributes.
@@ -320,7 +270,7 @@
 		    
 		    <div class="form-actions">
 		    	<div class="btn-group">
-			    	<button type="submit" class="btn btn-primary" name="submitButton" value="Classify">Classify</button>
+			    	<!-- <button type="submit" class="btn btn-primary" name="submitButton" value="Classify">Classify</button> -->
 			    	<button type="submit" class="btn btn-primary" name="submitButton" value="ARFF">Generate ARFF File</button>
 			    	<button type="submit" class="btn btn-primary" name="submitButton" value="Excel">Generate Excel File</button>
 		    	</div>

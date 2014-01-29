@@ -7,7 +7,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>DSM</title>
+    <title>CuRE</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -46,12 +46,11 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="#">Decision Support Monitor</a>
+          <a class="brand" href="#">CuRE</a>
           <div class="nav-collapse">
             <ul class="nav">
               <li><a href="${pageContext.request.contextPath}/">Home</a></li>
-              <li><a href="${pageContext.request.contextPath}/dashboard">Dashboard</a></li>
-              <li class="active"><a href="${pageContext.request.contextPath}/classification">Classification</a></li>
+              <li class="active"><a href="${pageContext.request.contextPath}/classification">Exporter</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
